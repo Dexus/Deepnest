@@ -70,7 +70,7 @@ jobs:
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
-          if [[ "${{ matrix.os }}" == "windows" ]]; then
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64") ]]; then
@@ -83,7 +83,7 @@ jobs:
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:fromdry --arch ${{ matrix.arch }}
           fi
-          if [[ "${{ matrix.os }}" == "windows" ]]; then
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             yarn publish:fromdry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64") ]]; then
