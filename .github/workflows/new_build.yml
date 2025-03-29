@@ -83,8 +83,4 @@
             with:
               name: dist-${{ matrix.os.name }}-${{ matrix.arch }}
               path: |
-                out/make/squirrel.windows/${{ matrix.arch }}/*.exe
-                out/make/deb/${{ matrix.arch }}/*.deb
-                out/make/rpm/${{ matrix.arch }}/*.rpm
-                out/make/rpm/${{ matrix.arch }}/*.rpm
-                out/make/zip/*/${{ matrix.arch }}/*.zip
+                out/make/
