@@ -41,7 +41,7 @@ jobs:
       - name: Install distribution dependencies
         shell: bash
         run: |
-          if [[ ("${{ matrix.os.name }}" == "linux" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os.name }}" == "linux_arm64" && "${{ matrix.arch }}" == "arm64") ]]; then
+          if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             sudo apt-get update && sudo apt-get upgrade && sudo apt-get install -y flatpak flatpak-builder elfutils snapd libgl1 libglx-mesa0;
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo ;
             flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo ;
@@ -63,25 +63,25 @@ jobs:
           UPDATE_FEED_OWNER: ${{ vars.DN_UPDATE_FEED_OWNER }}
           UPDATE_FEED_REPOSITORY: ${{ vars.DN_UPDATE_FEED_REPOSITORY }}
         run: |
-          if [[ ("${{ matrix.os.name }}" == "linux" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os.name }}" == "linux_arm64" && "${{ matrix.arch }}" == "arm64") ]]; then
+          if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
           if [[ "${{ matrix.os.name }}" == "windows" ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
-          if [[ "${{ matrix.os.name }}" == *"macos"* ]]; then
+          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
 
       - name: Publish From Dry (${{ matrix.arch }})
         run: |
-          if [[ ("${{ matrix.os.name }}" == "linux" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os.name }}" == "linux_arm64" && "${{ matrix.arch }}" == "arm64") ]]; then
+          if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:fromdry --arch ${{ matrix.arch }}
           fi
           if [[ "${{ matrix.os.name }}" == "windows" ]]; then
             yarn publish:fromdry --arch ${{ matrix.arch }}
           fi
-          if [[ "${{ matrix.os.name }}" == *"macos"* ]]; then
+          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:fromdry --arch ${{ matrix.arch }}
           fi
         env:
