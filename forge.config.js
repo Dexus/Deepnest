@@ -189,7 +189,7 @@ module.exports = {
     },
     */
   ],
-  publisher: [
+  publishers: [
     {
       name: '@electron-forge/publisher-github',
       config: {
