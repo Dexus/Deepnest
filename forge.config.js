@@ -4,6 +4,10 @@ const { rmSync } = require('fs');
 const { globSync } = require('glob');
 const path = require('path');
 
+// Get the package version from package.json
+const packageJson = require('./package.json');
+const packageVersion = packageJson.version;
+
 // There is probably a better way to do this, such as fetching it directly from forge
 let makerArch = null;
 for (let i = 0; i < process.argv.length; i++) {
@@ -72,6 +76,7 @@ module.exports = {
     appCategoryType: "public.app-category.productivity",
     appBundleId: "net.deepnest.app",
     appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net",
+    executableName: "deepnest",
     asar: true,
     ignore: (p) => {
       if (p === '') {
@@ -92,8 +97,8 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: 'deepnest',
-        setupExe: `deepnest-${makerArch}-setup.exe`,
+        name: `deepnest-${makerArch}`,
+        setupExe: `deepnest-v${packageVersion}-${makerArch}-setup.exe`,
         // setupIcon: path.resolve(__dirname, '_assets', 'icon.ico'),
         // loadingGif: path.resolve(__dirname, '_assets', 'loading.gif'),
       },
