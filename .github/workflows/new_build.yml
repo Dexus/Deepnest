@@ -18,7 +18,7 @@
                 { name: 'linux_arm64',   image: 'ubuntu-24.04-arm' },
                 { name: 'windows', image: 'windows-latest' },
                 { name: 'macos',   image: 'macos-latest' },
-                { name: 'macos_x86',   image: 'macos-13' }
+                { name: 'macos_x64',   image: 'macos-13' }
               ]
             arch: [ 'x64', 'arm64' ]
           fail-fast: false
@@ -77,13 +77,14 @@
               if [ "${{ matrix.os.name }}" == "windows" ]; then
                 yarn make --arch ${{ matrix.arch }};
               fi
-              if [[ "${{ matrix.os.name }}" == *"macos"* ]]; then
+              if [[ ("${{ matrix.os.name }}" == "macos_x64" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os.name }}" == "macos" && "${{ matrix.arch }}" == "arm64") ]]; then
                 yarn make --arch ${{ matrix.arch }};
               fi
               find ./out/make -type f
 
           - name: Upload artifacts (${{ matrix.arch }})
             uses: actions/upload-artifact@v4
+            if: ${{ ((matrix.os.name == 'linux' && matrix.arch == 'x64') || (matrix.os.name == 'linux_arm64' && matrix.arch == 'arm64') || (matrix.os.name == 'windows' && (matrix.arch == 'x64' || matrix.arch == 'arm64')) || (matrix.os.name == 'macos_x64' && matrix.arch == 'x64') || (matrix.os.name == 'macos' && matrix.arch == 'arm64')) }}
             with:
               name: dist-${{ matrix.os.name }}-${{ matrix.arch }}
               path: |
