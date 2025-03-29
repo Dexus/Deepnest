@@ -1,6 +1,9 @@
 ---
 name: Application Publish
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
@@ -59,6 +62,7 @@ jobs:
           # fi
 
       - name: Publish Dry (${{ matrix.arch }})
+        shell: bash
         env:
           UPDATE_FEED_OWNER: ${{ vars.DN_UPDATE_FEED_OWNER }}
           UPDATE_FEED_REPOSITORY: ${{ vars.DN_UPDATE_FEED_REPOSITORY }}
@@ -74,6 +78,7 @@ jobs:
           fi
 
       - name: Publish From Dry (${{ matrix.arch }})
+        shell: bash
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:fromdry --arch ${{ matrix.arch }}
