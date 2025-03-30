@@ -1,6 +1,7 @@
 # test directories
 __tests__
 test
+!@playwright/test
 tests
 powered-test
 
