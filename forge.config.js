@@ -261,6 +261,7 @@ const config = {
 if (process.env.CI && process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '') {
   config.packagerConfig.osxSign = {
     identity: process.env.APPLE_IDENTITY,
+    keychain: process.env.APPLE_KEYCHAIN_PATH,
     // entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
     // 'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.plist'),
     hardenedRuntime: true,
@@ -268,10 +269,10 @@ if (process.env.CI && process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '
   };
   config.packagerConfig.osxNotarize = {
     tool: 'notarytool',
+    keychain: process.env.APPLE_KEYCHAIN,
     appleApiKey: process.env.NOTARIZATION_KEY_PATH,
-    appleApiKeyId: process.env.APPLE_API_KEY_ID,
-    appleApiIssuer: process.env.APPLE_API_ISSUER,
-    appBundleId: 'net.deepnest.app',
+    appleApiKeyId: process.env.APPLE_NOTARY_KEY_ID,
+    appleApiIssuer: process.env.APPLE_API_ISSUER
   };
 }
 
