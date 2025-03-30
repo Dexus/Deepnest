@@ -1,4 +1,4 @@
-name: build (old)
+name: build (old version)
 
 on:
   workflow_dispatch:

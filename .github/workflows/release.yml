@@ -99,8 +99,8 @@ jobs:
           touch "$NOTARIZATION_KEY_PATH"
           echo -n "$APPLE_NOTARY_KEY" | base64 --decode -o "$NOTARIZATION_KEY_PATH"
         env:
-          NOTARIZATION_KEY_PATH: "${{ env.RUNNER_TEMP}}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
-          CERTIFICATE_PATH: "${{ env.RUNNER_TEMP}}/signing_cert.p12"
+          NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
           APPLE_SIGN_CERT: ${{ secrets.APPLE_MAC_CERT }}
           APPLE_SIGN_CERT_PASS: ${{ secrets.APPLE_MAC_CERT_PASS }}
           APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}
