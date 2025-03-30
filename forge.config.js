@@ -45,7 +45,7 @@ let includeFiles = [
 ];
 // Fix: Use startsWith instead of includes to match node_modules paths
 //console.log('Include files:', includeFiles.filter((f) => f.startsWith('node_modules')));
-module.exports = {
+const config = {
   hooks: {
     packageAfterPrune: async (config, buildPath, electronVersion, platform, arch) => {
       const cwd = path.resolve(buildPath, 'node_modules', '@deepnest', 'calculate-nfp');
@@ -134,8 +134,27 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
+        name: `deepnest-nect_${pkg.version}`,
         background: path.resolve(__dirname, '_assets', 'dmg-background.png'),
-        format: 'ULFO'
+        icon: path.join(__dirname, '_assets', 'icon.icns'),
+        format: 'ULFO',
+        contents: () => [
+          {
+            x: 150,
+            y: 180,
+            type: 'file',
+            path: `${process.cwd()}/out/Proton Pass-darwin-${arch}/Proton Pass.app`,
+          },
+          { x: 350, y: 180, type: 'link', path: '/Applications' },
+        ],
+        additionalDMGOptions: {
+          window: {
+            size: {
+              width: 500,
+              height: 345,
+            },
+          },
+        },
       }
     },/*
     {
@@ -236,3 +255,16 @@ module.exports = {
     }),
   ],
 };
+
+// If we're running in Jenkins (or the env indicates we are) attempt to
+// code sign.
+if (process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '') {
+  config.packagerConfig.osxSign = {};
+  config.packagerConfig.osxNotarize = {
+    appleApiKey: process.env.APPLE_API_KEY,
+    appleApiKeyId: process.env.APPLE_API_KEY_ID,
+    appleApiIssuer: process.env.APPLE_API_ISSUER
+  };
+}
+
+module.exports = config;

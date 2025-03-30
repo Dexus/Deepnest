@@ -1,44 +1,89 @@
-name: build
+---
+name: Application Build
 
 on:
-  workflow_dispatch:
   push:
-    # enable next line to limit branches to run
-    branches: ["main"]
+    branches-ignore:
+      - "release/*"
+    tags-ignore:
+      - "*"
   pull_request:
-    # enable next line to limit branches to run
-    # branches: [ "main" ]
 
 jobs:
   build:
+    env:
+      UPDATE_FEED_OWNER: Dexus
+      UPDATE_FEED_REPOSITORY: Deepnest
+      BUILD_NUMBER: ${{ github.run_number }}
     strategy:
       matrix:
-        node-version: [20.x, 22.x]
-        os: [windows-2022, ubuntu-22.04]
+        os:
+          [
+            "ubuntu-24.04",
+            "ubuntu-24.04-arm",
+            "windows-latest",
+            "macos-latest",
+            "macos-13",
+          ]
+        arch: ["x64", "arm64"]
+        exclude:
+          - os: "ubuntu-24.04-arm"
+            arch: "x64"
+          - os: "macos-13"
+            arch: "arm64"
+      fail-fast: false
+
     runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
+      - name: Github checkout
+        uses: actions/checkout@v4
 
-      #    not needed currently, but leaving here for future use
-      #    - uses: actions/setup-python@v4
-      #      with:
-      #        python-version: '2.7.18'
+      - name: Corepack Enable Yarn
+        run: corepack enable yarn
 
-      - name: boost
-        if: startsWith(matrix.os,'ubuntu')
-        run: sudo apt-get update && sudo apt-get install -yq libboost-dev
-
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node (v20)
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-data
+          cache: "yarn"
+          node-version: "20"
 
-      - name: Build
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Install distribution dependencies
+        shell: bash
         run: |
-          npm install
-          npm run build
-      - name: Package
+          if [[ "${{ matrix.os }}" == "ubuntu-24.04" || "${{ matrix.os }}" = "ubuntu-24.04-arm" ]]; then
+            sudo apt-get update && sudo apt-get upgrade && sudo apt-get install -y flatpak flatpak-builder elfutils snapd libgl1 libglx-mesa0;
+            flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo ;
+            flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo ;
+            flatpak update --appstream -y;
+            flatpak install -y --user flathub org.freedesktop.Sdk//24.08;
+            flatpak install -y --user flathub org.freedesktop.Platform//24.08;
+            sudo apt-get install -y flatpak flatpak-builder elfutils ;
+            git config --global --add protocol.file.allow always
+            #sudo snap install snapcraft --classic;
+            #sudo snap install core22 --classic;
+          fi
+          # if [ "${{ matrix.os }}" == "windows-latest" ]; then
+          #   choco install -y nsis;
+          #   choco install wixtoolset  --version=3.14.0;
+          # fi
+
+      - name: Build (${{ matrix.arch }})
+        # if: matrix.os.image == 'macos-latest'
+        shell: bash
         run: |
-          npm run dist
+          mkdir -p out/make/;
+          yarn make --arch ${{ matrix.arch }};
+          find ./out -type f
+
+      - name: Upload artifacts (${{ matrix.arch }})
+        uses: actions/upload-artifact@v4
+        #if: ${{ ((matrix.os == 'ubuntu-24.04' && matrix.arch == 'x64') || (matrix.os == 'ubuntu-24.04-arm' && matrix.arch == 'arm64') || (matrix.os == 'windows' && (matrix.arch == 'x64' || matrix.arch == 'arm64')) || (matrix.os == 'macos_x64' && matrix.arch == 'x64') || (matrix.os == 'macos' && matrix.arch == 'arm64')) }}
+        with:
+          name: dist-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            out/make/
