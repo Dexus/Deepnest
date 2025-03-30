@@ -35,7 +35,7 @@ jobs:
             arch: "arm64"
           - os: "macos-latest"
             arch: "x64"
-      fail-fast: false
+      fail-fast: true
 
     runs-on: ${{ matrix.os }}
 
