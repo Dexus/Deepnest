@@ -18,7 +18,8 @@
     }
   ],
   "scripts": {
-    "start": "electron-forge start",
+    "start": "electron .",
+    "forge-start": "electron-forge start",
     "test": "playwright test",
     "build": "electron-rebuild",
     "clean": "rmdir /s /q build dist >nul 2>&1|echo . >nul",
