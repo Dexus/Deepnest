@@ -112,6 +112,9 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
@@ -137,6 +140,9 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
 
       # TODO: add AppImage for linux if we can get snap and/or flatpak to work
       # https://github.com/AppImage/appimagetool?tab=readme-ov-file
