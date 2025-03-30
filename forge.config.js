@@ -269,7 +269,7 @@ if (process.env.CI && process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '
   };
   config.packagerConfig.osxNotarize = {
     tool: 'notarytool',
-    keychain: process.env.APPLE_KEYCHAIN,
+    //keychain: process.env.APPLE_KEYCHAIN,
     appleApiKey: process.env.NOTARIZATION_KEY_PATH,
     appleApiKeyId: process.env.APPLE_NOTARY_KEY_ID,
     appleApiIssuer: process.env.APPLE_API_ISSUER
