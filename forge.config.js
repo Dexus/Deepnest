@@ -99,7 +99,7 @@ const config = {
       config: {
         name: `deepnest-${makerArch}`,
         setupExe: `deepnest-v${packageVersion}-${makerArch}-setup.exe`,
-        // setupIcon: path.resolve(__dirname, '_assets', 'icon.ico'),
+        setupIcon: path.resolve(__dirname, '_assets', 'icon.ico'),
         // loadingGif: path.resolve(__dirname, '_assets', 'loading.gif'),
       },
     },/*
@@ -156,14 +156,12 @@ const config = {
           },
         },
       }
-    },/*
+    },
     {
       name: '@electron-forge/maker-pkg',
       config: {
-        //keychain: 'my-secret-ci-keychain'
-        // other configuration options
       }
-    },*/
+    },
     {
       name: '@electron-forge/maker-flatpak',
       config: {
