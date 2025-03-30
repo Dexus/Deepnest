@@ -81,6 +81,33 @@ jobs:
           #   choco install wixtoolset  --version=3.14.0;
           # fi
 
+      - name: Setup macOS keychain and signing certificates
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
+        run: |
+          # Create temporary keychain
+          security create-keychain -p "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$APPLE_KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASS" "$APPLE_KEYCHAIN"
+          security default-keychain -s "$APPLE_KEYCHAIN"
+
+          # Import signing certificate
+          echo -n "$APPLE_SIGN_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
+          security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -k "$APPLE_KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN"
+
+          # Import API key for notarization
+          touch "$NOTARIZATION_KEY_PATH"
+          echo -n "$APPLE_NOTARY_KEY" | base64 --decode -o "$NOTARIZATION_KEY_PATH"
+        env:
+          NOTARIZATION_KEY_PATH: "${{ env.RUNNER_TEMP}}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          CERTIFICATE_PATH: "${{ env.RUNNER_TEMP}}/signing_cert.p12"
+          APPLE_SIGN_CERT: ${{ secrets.APPLE_MAC_CERT }}
+          APPLE_SIGN_CERT_PASS: ${{ secrets.APPLE_MAC_CERT_PASS }}
+          APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}
+          APPLE_KEYCHAIN_PASS: ${{ secrets.APPLE_KEYCHAIN_PASS }}
+          APPLE_NOTARY_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+
       - name: Publish Dry (${{ matrix.arch }})
         shell: bash
         env:
@@ -110,3 +137,7 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # TODO: add AppImage for linux if we can get snap and/or flatpak to work
+      # https://github.com/AppImage/appimagetool?tab=readme-ov-file
+      # something like this: https://github.com/tropy/tropy/blob/bdf729db09e68b9ea514e2e1cbd67faac42c1872/scripts/pack.js#L116

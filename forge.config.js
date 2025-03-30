@@ -258,12 +258,20 @@ const config = {
 
 // If we're running in Jenkins (or the env indicates we are) attempt to
 // code sign.
-if (process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '') {
-  config.packagerConfig.osxSign = {};
+if (process.env.CI && process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '') {
+  config.packagerConfig.osxSign = {
+    identity: process.env.APPLE_IDENTITY,
+    // entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
+    // 'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.plist'),
+    hardenedRuntime: true,
+    gatekeeperAssess: false,
+  };
   config.packagerConfig.osxNotarize = {
-    appleApiKey: process.env.APPLE_API_KEY,
+    tool: 'notarytool',
+    appleApiKey: process.env.NOTARIZATION_KEY_PATH,
     appleApiKeyId: process.env.APPLE_API_KEY_ID,
-    appleApiIssuer: process.env.APPLE_API_ISSUER
+    appleApiIssuer: process.env.APPLE_API_ISSUER,
+    appBundleId: 'net.deepnest.app',
   };
 }
 
