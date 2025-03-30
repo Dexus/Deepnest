@@ -110,6 +110,8 @@ jobs:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         run: |
           mkdir -p out/make/;
           yarn make --arch ${{ matrix.arch }};
