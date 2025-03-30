@@ -94,7 +94,7 @@ jobs:
           echo -n "$APPLE_SIGN_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
           echo -n "$APPLE_INSTALL_CERT" | base64 --decode -o "$CERTIFICATE_INSTALL_PATH"
           security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -k "$APPLE_KEYCHAIN_PATH"
-          security import "$CERTIFICATE_INSTALL_PATH" -P "$APPLE_INSTALL_CERT_PASS" -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
+          security import "$CERTIFICATE_INSTALL_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple:,codesign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
 
           # Import API key for notarization
