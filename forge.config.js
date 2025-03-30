@@ -143,7 +143,7 @@ const config = {
             x: 150,
             y: 180,
             type: 'file',
-            path: `${process.cwd()}/out/Proton Pass-darwin-${arch}/Proton Pass.app`,
+            path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
           },
           { x: 350, y: 180, type: 'link', path: '/Applications' },
         ],

@@ -64,6 +64,9 @@
     "electron": "34.4.1",
     "glob": "^11.0.1"
   },
+  "optionalDependencies": {
+    "appdmg":"0.6.6"
+  },
   "dependencies": {
     "@deepnest/calculate-nfp": "202503.13.155300",
     "@deepnest/svg-preprocessor": "0.1.6",

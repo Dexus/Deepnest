@@ -71,6 +71,9 @@ jobs:
             #sudo snap install snapcraft --classic;
             #sudo snap install core22 --classic;
           fi
+          if [[ "${{ matrix.os }}" == "macos-latest" || "${{ matrix.os }}" == "macos-13" ]]; then
+            brew install python-setuptools;
+          fi
           # if [ "${{ matrix.os }}" == "windows-latest" ]; then
           #   choco install -y nsis;
           #   choco install wixtoolset  --version=3.14.0;
