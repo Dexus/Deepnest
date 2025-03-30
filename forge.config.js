@@ -160,6 +160,9 @@ const config = {
     {
       name: '@electron-forge/maker-pkg',
       config: {
+        keychain: process.env.APPLE_KEYCHAIN_PATH,
+        identity: process.env.APPLE_IDENTITY,
+        // other configuration options
       }
     },
     {
