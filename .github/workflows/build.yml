@@ -54,7 +54,9 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: yarn --immutable
+        run: |
+          yarn --immutable
+          yarn clean
 
       - name: Install distribution dependencies
         shell: bash
