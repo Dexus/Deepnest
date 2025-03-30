@@ -90,15 +90,19 @@ jobs:
 
           # Import signing certificate
           echo -n "$APPLE_SIGN_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
+          echo -n "$APPLE_INSTALL_CERT" | base64 --decode -o "$CERTIFICATE_INSTALL_PATH"
           security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -k "$APPLE_KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
+          security import "$CERTIFICATE_INSTALL_PATH" -P "$APPLE_INSTALL_CERT_PASS" -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
 
           # Import API key for notarization
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "$NOTARIZATION_KEY_PATH"
         env:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
+          CERTIFICATE_INSTALL_PATH: "${{ runner.temp }}/install_cert.p12"
           APPLE_SIGN_CERT: ${{ secrets.APPLE_MAC_CERT }}
+          APPLE_INSTALL_CERT: ${{ secrets.APPLE_MAC_INSTALL_CERT }}
           APPLE_SIGN_CERT_PASS: ${{ secrets.APPLE_MAC_CERT_PASS }}
           APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}
           APPLE_KEYCHAIN_PATH: "${{ runner.temp }}/${{ secrets.APPLE_KEYCHAIN }}"

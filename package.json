@@ -62,10 +62,11 @@
     "@types/node": "22.13.5",
     "cross-replace": "0.2.0",
     "electron": "34.4.1",
+    "electron-forge-maker-appimage": "^26.0.12",
     "glob": "^11.0.1"
   },
   "optionalDependencies": {
-    "appdmg":"0.6.6"
+    "appdmg": "0.6.6"
   },
   "dependencies": {
     "@deepnest/calculate-nfp": "202503.13.155300",
