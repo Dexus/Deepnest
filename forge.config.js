@@ -134,7 +134,7 @@ const config = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        name: `deepnest-nect_${pkg.version}`,
+        name: `deepnest-next_${packageVersion}`,
         background: path.resolve(__dirname, '_assets', 'dmg-background.png'),
         icon: path.join(__dirname, '_assets', 'icon.icns'),
         format: 'ULFO',
