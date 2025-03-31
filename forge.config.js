@@ -89,7 +89,7 @@ const config = {
       try {
         // Execute yarn install with the specified arch in the build folder
         execSync(`cat package.json`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64',YARN_ENABLE_IMMUTABLE_INSTALLS:false } });
-        execSync(`ls -als`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64',YARN_ENABLE_IMMUTABLE_INSTALLS:false } });
+        execSync(`ls -alrs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64',YARN_ENABLE_IMMUTABLE_INSTALLS:false } });
         execSync(`yarn install --refresh-lockfile`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64',YARN_ENABLE_IMMUTABLE_INSTALLS:false } });
       } catch (error) {
         console.error('Error during yarn install:', error.message);
