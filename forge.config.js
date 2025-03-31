@@ -86,8 +86,25 @@ const config = {
       platform,
       arch
     ) => {
+      
+      console.log(
+        "packageAfterPrune",
+        buildPath,
+        electronVersion,
+        platform,
+        arch
+      );
       try {
         const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
+        
+      console.log(
+        "packageAfterPrune",
+        buildPath,
+        electronVersion,
+        platform,
+        myPlatform,
+        arch
+      );
         // Execute yarn install with the specified arch in the build folder
         execSync(`rm -rf yarn.lock node_modules/`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
         execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
@@ -103,13 +120,6 @@ const config = {
       gypFiles.forEach((gypFile) => {
         console.log("Native addon detected in module:", path.dirname(gypFile));
       });
-      console.log(
-        "packageAfterPrune",
-        buildPath,
-        electronVersion,
-        platform,
-        arch
-      );
       
       const cwd = path.resolve(
         buildPath,
