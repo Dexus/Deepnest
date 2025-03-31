@@ -2,6 +2,7 @@ const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const { rmSync } = require('fs');
 const { globSync } = require('glob');
+const nodeAbi = require('node-abi')
 const path = require('path');
 
 // Get the package version from package.json
@@ -99,7 +100,15 @@ const config = {
 
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
-      await delay(2000);
+      const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
+      const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, 'electron')
+      const matchString = new RegExp(`prebuilds/${platform}`);
+      prebuilds.forEach(function (path) {
+        if (!path.match(matchString) && !path.includes(abiVersion)) {
+          rmSync(path, { recursive: true });
+        }
+      });
+      //await delay(2000);
       return void 0;
     },
   },
