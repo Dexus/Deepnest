@@ -67,7 +67,7 @@ const config = {
     ) => {
       try {
         // Execute yarn install with the specified arch in the build folder
-        execSync(`yarn install`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64' } });
+        execSync(`yarn install --immutable`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64' } });
       } catch (error) {
         console.error('Error during yarn install:', error.message);
       }
