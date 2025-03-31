@@ -47,7 +47,7 @@ jobs:
           # Include only one target for each macOS build to avoid duplicates
           - os: "macos-13"
             target: ""
-          - os: "macos-latest" 
+          - os: "macos-latest"
             target: ""
       fail-fast: true # Explicitly failing fast because this is a publish. We want to bail the entire release if something went wrong with another build
 
@@ -99,16 +99,16 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASS" "$APPLE_KEYCHAIN"
           security default-keychain -s "$APPLE_KEYCHAIN"
 
-          # Import signing certificate
-          echo -n "$APPLE_SIGN_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
-          echo -n "$APPLE_INSTALL_CERT" | base64 --decode -o "$CERTIFICATE_INSTALL_PATH"
+          # Import signing certificate (using one p12 file for both)
+          echo -n "$APPLE_MAC_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
           security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -k "$APPLE_KEYCHAIN_PATH"
-          security import "$CERTIFICATE_INSTALL_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
+          security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple:,codesign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
+          rm $CERTIFICATE_PATH
 
           # Import API key for notarization
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "$NOTARIZATION_KEY_PATH"
-          
+
           # Create _assets directory if it doesn't exist and generate provisioning profile
           mkdir -p _assets
           if [[ "${{ matrix.target }}" == "mas" ]]; then
@@ -117,9 +117,8 @@ jobs:
         env:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
-          CERTIFICATE_INSTALL_PATH: "${{ runner.temp }}/install_cert.p12"
-          APPLE_SIGN_CERT: ${{ secrets.APPLE_MAC_CERT }}
-          APPLE_INSTALL_CERT: ${{ secrets.APPLE_MAC_INSTALL_CERT }}
+          CERTIFICATE_INSTALL_PATH: "${{ runner.temp }}/signing_cert.p12" # same file used for both roles
+          APPLE_MAC_CERT: ${{ secrets.APPLE_MAC_CERT }}
           APPLE_SIGN_CERT_PASS: ${{ secrets.APPLE_MAC_CERT_PASS }}
           APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}
           APPLE_KEYCHAIN_PATH: "${{ runner.temp }}/${{ secrets.APPLE_KEYCHAIN }}"
@@ -133,7 +132,6 @@ jobs:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           APPLE_KEYCHAIN_PATH: "${{ runner.temp }}/${{ secrets.APPLE_KEYCHAIN }}"
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          # Distinct identity variables without fallbacks
           APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION }}
           APPLE_DEVELOPER_ID_INSTALLER: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER }}
           APPLE_MAS_IDENTITY: ${{ secrets.APPLE_MAS_IDENTITY }}
@@ -164,7 +162,6 @@ jobs:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           APPLE_KEYCHAIN_PATH: "${{ runner.temp }}/${{ secrets.APPLE_KEYCHAIN }}"
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          # Distinct identity variables without fallbacks
           APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION }}
           APPLE_DEVELOPER_ID_INSTALLER: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER }}
           APPLE_MAS_IDENTITY: ${{ secrets.APPLE_MAS_IDENTITY }}
