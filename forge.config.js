@@ -87,10 +87,11 @@ const config = {
       arch
     ) => {
       try {
+        const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
         // Execute yarn install with the specified arch in the build folder
         execSync(`rm -rf yarn.lock node_modules/`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
         execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-        execSync(`npm install --cpu ${arch} --os ${platform=='mas'?'darwin':platform}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:arch } });
+        execSync(`npm install --cpu ${arch} --os ${myPlatform}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:arch } });
       } catch (error) {
         console.error('Error during yarn install:', error.message);
       }
