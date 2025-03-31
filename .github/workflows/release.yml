@@ -101,8 +101,7 @@ jobs:
 
           # Import signing certificate (using one p12 file for both)
           echo -n "$APPLE_MAC_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
-          security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -k "$APPLE_KEYCHAIN_PATH"
-          security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
+          security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple:,codesign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
           rm $CERTIFICATE_PATH
 
@@ -114,6 +113,10 @@ jobs:
           if [[ "${{ matrix.target }}" == "mas" ]]; then
             echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_assets/embedded.provisionprofile"
           fi
+          
+          security find-identity "$APPLE_KEYCHAIN_PATH" -v > /dev/null || true
+          security find-identity -p codesigning "$APPLE_KEYCHAIN_PATH" -v > /dev/null || true
+          security find-identity -p installer "$APPLE_KEYCHAIN_PATH" -v > /dev/null || true
         env:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
