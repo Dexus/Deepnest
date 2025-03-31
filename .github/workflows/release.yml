@@ -58,18 +58,16 @@ jobs:
       - name: Github checkout
         uses: actions/checkout@v4
 
-      - name: Corepack Enable Yarn
-        run: corepack enable yarn
-
       - name: Setup Node (v20)
         uses: actions/setup-node@v4
         with:
           # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-data
-          cache: "yarn"
+          cache: "npm"
           node-version: "20"
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install dependencies
-        run: yarn --immutable
+        run: npm install
 
       - name: Install distribution dependencies
         shell: bash
@@ -145,16 +143,16 @@ jobs:
           MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
-            yarn publish:dry --arch ${{ matrix.arch }}
+            npm run publish:dry --arch ${{ matrix.arch }}
           fi
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            yarn publish:dry --arch ${{ matrix.arch }}
+            npm run publish:dry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
-            yarn publish:dry --arch ${{ matrix.arch }}
+            npm run publish:dry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            yarn publish:dry --arch universal --platform mas
+            npm run publish:dry --arch universal --platform mas
           fi
 
       - name: Publish From Dry (${{ matrix.arch }})
@@ -175,16 +173,16 @@ jobs:
           MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }}
+            npm run publish:fromdry --arch ${{ matrix.arch }}
           fi
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }}
+            npm run publish:fromdry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }}
+            npm run publish:fromdry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            yarn publish:fromdry --arch universal --platform mas
+            npm run publish:fromdry --arch universal --platform mas
           fi
 
       # TODO: add AppImage for linux if we can get snap and/or flatpak to work
