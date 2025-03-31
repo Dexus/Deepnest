@@ -95,12 +95,13 @@ const config = {
 
       const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr", "bin");
       rmSync(cwd2, { recursive: true, force: true });
+
+      
       console.log('platform', platform);
       console.log('arch', arch);
       if (platform === "mas") {
         try {
           if (arch === "x64") {
-            
             const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
             const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
             renameSync(path.resolve(cwd3,'svg-preprocessor.darwin-x64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
