@@ -1,6 +1,6 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
-const { rmSync } = require('fs');
+const { rmSync, renameSync } = require('fs');
 const { globSync } = require('glob');
 const nodeAbi = require('node-abi')
 const path = require('path');
@@ -98,12 +98,23 @@ const config = {
       console.log('platform', platform);
       console.log('arch', arch);
       if (platform === "mas") {
-        if (arch === "x64") {
-          const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
-          rmSync(cwd3, { recursive: true, force: true });
-        } else {
-          const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
-          rmSync(cwd3, { recursive: true, force: true });
+        try {
+          if (arch === "x64") {
+            
+            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
+            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+            renameSync(path.resolve(cwd3,'svg-preprocessor.darwin-x64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            rmSync(cwd3, { recursive: true, force: true });
+            rmSync(cwd3, { recursive: true, force: true });
+          } else {
+            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
+            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+            renameSync(path.resolve(cwd4,'svg-preprocessor.darwin-arm64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            rmSync(cwd3, { recursive: true, force: true });
+            rmSync(cwd4, { recursive: true, force: true });
+          }
+        } catch (e) {
+          console.error('Error renaming files:', e);
         }
       }
 
