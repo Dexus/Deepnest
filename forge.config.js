@@ -143,7 +143,7 @@ const config = {
       name: '@electron-forge/maker-dmg',
       platforms: ['darwin'],
       config: {
-        name: `deepnest-next_${packageVersion}`,
+        name: `deepnest-${packageVersion}-${makerPlatform}-${makerArch}`,
         background: path.resolve(__dirname, '_assets', 'dmg-background.png'),
         icon: path.join(__dirname, '_assets', 'icon.icns'),
         format: 'ULFO',
@@ -295,7 +295,7 @@ if (process.env.CI) {
             ...maker.config,
             platform: 'mas',
             provisioningProfile: path.join(__dirname, '_assets', 'embedded.provisionprofile'),
-            name: 'deepnest-pkg-mas' // new: pkg name for MAS build
+            name: `deepnest-${packageVersion}-pkg-mas` // new: pkg name for MAS build
           };
           
           // Use dedicated MAS installer identity
@@ -336,7 +336,7 @@ if (process.env.CI) {
           maker.config = {
             ...maker.config,
             platform: 'darwin',
-            name: 'deepnest-pkg-darwin' // new: pkg name for darwin build
+            name: `deepnest-${packageVersion}-pkg-darwin` // new: pkg name for darwin build
           };
           
           // Use dedicated Developer ID installer identity
@@ -373,7 +373,7 @@ if (process.env.CI) {
     for (const maker of config.makers) {
       if (maker.name === '@electron-forge/maker-pkg') {
         maker.config.platform = 'mas';
-        maker.config.name = 'deepnest-pkg-mas'; // new: pkg name for MAS build in local dev
+        maker.config.name = `deepnest-${packageVersion}-pkg-mas`; // new: pkg name for MAS build in local dev
         // Local dev may have embedded.provisionprofile in the _assets directory
         const profilePath = path.join(__dirname, '_assets', 'embedded.provisionprofile');
         try {
@@ -389,7 +389,7 @@ if (process.env.CI) {
   else {
     for (const maker of config.makers) {
       if (maker.name === '@electron-forge/maker-pkg') {
-        maker.config.name = 'deepnest-pkg-darwin'; // new: pkg name for darwin build in local dev
+        maker.config.name = `deepnest-${packageVersion}-pkg-darwin`; // new: pkg name for darwin build in local dev
       }
     }
   }
