@@ -116,7 +116,6 @@ const config = {
         "@deepnest",
         "calculate-nfp"
       );
-      const cwd_xattr = path.resolve(buildPath, "node_modules", "fs-xattr");
       const includeFiles = [
         "rust-minkowski",
         "bin",
@@ -133,11 +132,7 @@ const config = {
         try {
           rmSync(filePath, { recursive: true, force: true });
         } catch (e) {}
-        const filePath2 = path.join(cwd_xattr, file);
-        //console.log('includeFiles', filePath);
-        try {
-          rmSync(filePath2, { recursive: true, force: true });
-        } catch (e) {}
+
       }
 
       const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
