@@ -27,6 +27,7 @@ jobs:
             "macos-13",
           ]
         arch: ["x64", "arm64"]
+        target: ["", "mas"]
         exclude:
           - os: "ubuntu-24.04-arm"
             arch: "x64"
@@ -36,10 +37,18 @@ jobs:
             arch: "x64"
           - os: "macos-13"
             arch: "arm64"
-        #   # Mitigation for Electron Forge naming conflict. See #1183.
-        #   - os: 'windows-latest'
-        #     arch: 'arm64'
-
+          # Exclude MAS target for non-macOS platforms
+          - os: "ubuntu-24.04"
+            target: "mas"
+          - os: "ubuntu-24.04-arm"
+            target: "mas"
+          - os: "windows-latest"
+            target: "mas"
+          # Include only one target for each macOS build to avoid duplicates
+          - os: "macos-13"
+            target: ""
+          - os: "macos-latest" 
+            target: ""
       fail-fast: true # Explicitly failing fast because this is a publish. We want to bail the entire release if something went wrong with another build
 
     runs-on: ${{ matrix.os }}
@@ -99,6 +108,12 @@ jobs:
 
           # Import API key for notarization
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "$NOTARIZATION_KEY_PATH"
+          
+          # Create _assets directory if it doesn't exist and generate provisioning profile
+          mkdir -p _assets
+          if [[ "${{ matrix.target }}" == "mas" ]]; then
+            echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_assets/embedded.provisionprofile"
+          fi
         env:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
@@ -118,8 +133,16 @@ jobs:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           APPLE_KEYCHAIN_PATH: "${{ runner.temp }}/${{ secrets.APPLE_KEYCHAIN }}"
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
+          # Distinct identity variables without fallbacks
+          APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION }}
+          APPLE_DEVELOPER_ID_INSTALLER: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER }}
+          APPLE_MAS_IDENTITY: ${{ secrets.APPLE_MAS_IDENTITY }}
+          APPLE_MAS_INSTALLER_IDENTITY: ${{ secrets.APPLE_MAS_INSTALLER_IDENTITY }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          CI: "true"
+          BUILD_NUMBER: ${{ github.run_number }}
+          MAKER_ARCH: ${{ matrix.arch }}
+          MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
@@ -127,29 +150,43 @@ jobs:
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
-          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64") ]]; then
+          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
             yarn publish:dry --arch ${{ matrix.arch }}
+          fi
+          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
+            yarn publish:dry --arch ${{ matrix.arch }} --platform mas
           fi
 
       - name: Publish From Dry (${{ matrix.arch }})
         shell: bash
-        run: |
-          if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }}
-          fi
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }}
-          fi
-          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64") ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }}
-          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           APPLE_KEYCHAIN_PATH: "${{ runner.temp }}/${{ secrets.APPLE_KEYCHAIN }}"
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
+          # Distinct identity variables without fallbacks
+          APPLE_DEVELOPER_ID_APPLICATION: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION }}
+          APPLE_DEVELOPER_ID_INSTALLER: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER }}
+          APPLE_MAS_IDENTITY: ${{ secrets.APPLE_MAS_IDENTITY }}
+          APPLE_MAS_INSTALLER_IDENTITY: ${{ secrets.APPLE_MAS_INSTALLER_IDENTITY }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          CI: "true"
+          BUILD_NUMBER: ${{ github.run_number }}
+          MAKER_ARCH: ${{ matrix.arch }}
+          MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
+        run: |
+          if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
+            yarn publish:fromdry --arch ${{ matrix.arch }}
+          fi
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            yarn publish:fromdry --arch ${{ matrix.arch }}
+          fi
+          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
+            yarn publish:fromdry --arch ${{ matrix.arch }}
+          fi
+          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
+            yarn publish:fromdry --arch ${{ matrix.arch }} --platform mas
+          fi
 
       # TODO: add AppImage for linux if we can get snap and/or flatpak to work
       # https://github.com/AppImage/appimagetool?tab=readme-ov-file

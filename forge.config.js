@@ -8,12 +8,17 @@ const path = require('path');
 const packageJson = require('./package.json');
 const packageVersion = packageJson.version;
 
-// There is probably a better way to do this, such as fetching it directly from forge
-let makerArch = null;
+// Extract platform and arch from command line arguments
+let makerArch = process.env.MAKER_ARCH || null;
+let platform = process.env.MAKER_PLATFORM || "darwin";
+
 for (let i = 0; i < process.argv.length; i++) {
   const arg = process.argv[i];
   if (arg === "--arch") {
     makerArch = process.argv[i + 1];
+  }
+  if (arg === "--platform") {
+    platform = process.argv[i + 1];
   }
 }
 
@@ -159,11 +164,8 @@ const config = {
     },
     {
       name: '@electron-forge/maker-pkg',
-      config: {
-        keychain: process.env.APPLE_KEYCHAIN_PATH,
-        identity: process.env.APPLE_IDENTITY.replace('Application','Installer'),
-        // other configuration options
-      }
+      platforms: ['darwin', 'mas'],
+      config: {}
     },
     {
       name: '@electron-forge/maker-flatpak',
@@ -257,24 +259,125 @@ const config = {
   ],
 };
 
-// If we're running in Jenkins (or the env indicates we are) attempt to
-// code sign.
-if (process.env.CI && process.env.BUILD_NUMBER && process.env.BUILD_NUMBER !== '') {
+// Configure code signing based on environment
+if (process.env.CI) {
+  // CI Environment - GitHub Actions
+  if (process.platform === 'darwin' || platform === 'darwin' || platform === 'mas') {
+    // Base signing configuration
+    const baseSignConfig = {
+      hardenedRuntime: true,
+      gatekeeperAssess: false
+    };
+    
+    // Configure for MAS vs regular macOS builds
+    if (platform === 'mas') {
+      // For MAS builds, use dedicated MAS identity
+      if (process.env.APPLE_MAS_IDENTITY) {
+        baseSignConfig.identity = process.env.APPLE_MAS_IDENTITY;
+      }
+      
+      config.packagerConfig.osxSign = {
+        ...baseSignConfig,
+        entitlements: path.join(__dirname, '_assets', 'entitlements.mas.plist'),
+        'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.mas.inherit.plist'),
+        'signature-flags': 'library'
+      };
+      
+      // Update PKG maker for MAS builds
+      for (const maker of config.makers) {
+        if (maker.name === '@electron-forge/maker-pkg') {
+          maker.config = {
+            ...maker.config,
+            platform: 'mas',
+            provisioningProfile: path.join(__dirname, '_assets', 'embedded.provisionprofile')
+          };
+          
+          // Use dedicated MAS installer identity
+          if (process.env.APPLE_MAS_INSTALLER_IDENTITY) {
+            maker.config.identity = process.env.APPLE_MAS_INSTALLER_IDENTITY;
+          }
+          
+          if (process.env.APPLE_KEYCHAIN_PATH) {
+            maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
+          }
+        }
+      }
+    } else {
+      // Regular macOS builds use Developer ID certificates
+      if (process.env.APPLE_DEVELOPER_ID_APPLICATION) {
+        baseSignConfig.identity = process.env.APPLE_DEVELOPER_ID_APPLICATION;
+      }
+      
+      config.packagerConfig.osxSign = {
+        ...baseSignConfig,
+        entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
+        'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.inherit.plist')
+      };
+      
+      // Add notarization if all required environment variables exist
+      if (process.env.APPLE_API_KEY_ID && process.env.APPLE_API_ISSUER && process.env.NOTARIZATION_KEY_PATH) {
+        config.packagerConfig.osxNotarize = {
+          tool: 'notarytool',
+          appleApiKey: process.env.NOTARIZATION_KEY_PATH,
+          appleApiKeyId: process.env.APPLE_API_KEY_ID,
+          appleApiIssuer: process.env.APPLE_API_ISSUER
+        };
+      }
+      
+      // Update PKG maker for regular builds
+      for (const maker of config.makers) {
+        if (maker.name === '@electron-forge/maker-pkg') {
+          maker.config = {
+            ...maker.config,
+            platform: 'darwin'
+          };
+          
+          // Use dedicated Developer ID installer identity
+          if (process.env.APPLE_DEVELOPER_ID_INSTALLER) {
+            maker.config.identity = process.env.APPLE_DEVELOPER_ID_INSTALLER;
+          }
+          
+          if (process.env.APPLE_KEYCHAIN_PATH) {
+            maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
+          }
+        }
+      }
+    }
+  }
+} else if (process.platform === 'darwin') {
+  // Local development on macOS
   config.packagerConfig.osxSign = {
-    identity: process.env.APPLE_IDENTITY,
-    keychain: process.env.APPLE_KEYCHAIN_PATH,
-    // entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
-    // 'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.plist'),
     hardenedRuntime: true,
     gatekeeperAssess: false,
+    entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
+    'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.inherit.plist')
   };
-  config.packagerConfig.osxNotarize = {
-    tool: 'notarytool',
-    //keychain: process.env.APPLE_KEYCHAIN,
-    appleApiKey: process.env.NOTARIZATION_KEY_PATH,
-    appleApiKeyId: process.env.APPLE_NOTARY_KEY_ID,
-    appleApiIssuer: process.env.APPLE_API_ISSUER
-  };
+  
+  // For local MAS builds
+  if (platform === 'mas') {
+    config.packagerConfig.osxSign = {
+      hardenedRuntime: true,
+      gatekeeperAssess: false,
+      entitlements: path.join(__dirname, '_assets', 'entitlements.mas.plist'),
+      'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.mas.inherit.plist'),
+      'signature-flags': 'library'
+    };
+    
+    for (const maker of config.makers) {
+      if (maker.name === '@electron-forge/maker-pkg') {
+        maker.config.platform = 'mas';
+        // Local dev may have embedded.provisionprofile in the _assets directory
+        const profilePath = path.join(__dirname, '_assets', 'embedded.provisionprofile');
+        try {
+          if (require('fs').existsSync(profilePath)) {
+            maker.config.provisioningProfile = profilePath;
+          }
+        } catch (e) {
+          console.warn('Provisioning profile not found for local MAS build');
+        }
+      }
+    }
+  }
 }
 
 module.exports = config;
