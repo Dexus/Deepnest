@@ -97,11 +97,15 @@ const config = {
       rmSync(cwd2, { recursive: true, force: true });
       console.log('platform', platform);
       console.log('arch', arch);
-      const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
-      readDirRecursive(cwd3);
-      const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
-      readDirRecursive(cwd4);
-
+      if (platform === "mas") {
+        if (arch === "x64") {
+          const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+          rmSync(cwd3, { recursive: true, force: true });
+        } else {
+          const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
+          rmSync(cwd3, { recursive: true, force: true });
+        }
+      }
 
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
