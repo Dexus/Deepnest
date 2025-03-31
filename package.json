@@ -67,8 +67,7 @@
     "electron-forge-maker-appimage": "^26.0.12",
     "glob": "^11.0.1",
     "node-abi": "^4.2.0",
-    "patch-package": "^8.0.0",
-    "postinstall-postinstall": "^2.1.0"
+    "patch-package": "^8.0.0"
   },
   "optionalDependencies": {
     "appdmg": "0.6.6"
@@ -90,12 +89,13 @@
   },
   "files": [
     "main.js",
+    "notification-service.js",
+    "presets.js",
     "main/**/*",
     "index.d.ts",
     "node_modules",
     "package.json",
-    "icon.icns",
-    "icon.ico"
+    "_assets"
   ],
   "contributors": [
     {
@@ -106,6 +106,5 @@
       "name": "Jack Qiao",
       "email": "jak000@gmail.com"
     }
-  ],
-  "packageManager": "yarn@4.8.1"
+  ]
 }
