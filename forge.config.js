@@ -141,6 +141,7 @@ const config = {
     },
     {
       name: '@electron-forge/maker-dmg',
+      platforms: ['darwin'],
       config: {
         name: `deepnest-next_${packageVersion}`,
         background: path.resolve(__dirname, '_assets', 'dmg-background.png'),
@@ -151,7 +152,7 @@ const config = {
             x: 150,
             y: 180,
             type: 'file',
-            path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
+            path: `${process.cwd()}/out/deepnest-${makerPlatform}-${makerArch}/deepnest.app`,
           },
           { x: 350, y: 180, type: 'link', path: '/Applications' },
         ],
