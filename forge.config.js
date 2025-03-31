@@ -157,15 +157,14 @@ const config = {
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
       const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
-      const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, 'electron')
-      const matchString = new RegExp(`prebuilds/${platform}`);
+      const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, 'electron');
       prebuilds.forEach(function (fpath) {
-        if (!fpath.match(matchString) && !fpath.includes(abiVersion)) {
-          rmSync(fpath, { recursive: true });
-        } else {
+          if (!fpath.endsWith('.node')) return; // only process .node files
+          if (!fpath.includes('abi'+abiVersion)) return; // ignore if abiVersion doesn't match
           renameSync(fpath, path.join(path.dirname(fpath), '..', `${platform}.node`));
-        }
       });
+      const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
+      prebuildDirs.forEach(dir => rmSync(dir, { recursive: true, force: true }));
       //await delay(2000);
       return void 0;
     },
