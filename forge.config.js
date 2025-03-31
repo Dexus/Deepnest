@@ -67,15 +67,19 @@ const config = {
           if (arch === "x64") {
             const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
             const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+            const cwd5 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor", "node_modules");
             renameSync(path.resolve(cwd3,'svg-preprocessor.darwin-x64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
             rmSync(cwd3, { recursive: true, force: true });
             rmSync(cwd4, { recursive: true, force: true });
+            rmSync(cwd5, { recursive: true, force: true });
           } else {
             const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
             const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+            const cwd5 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor", "node_modules");
             renameSync(path.resolve(cwd4,'svg-preprocessor.darwin-arm64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
             rmSync(cwd3, { recursive: true, force: true });
             rmSync(cwd4, { recursive: true, force: true });
+            rmSync(cwd5, { recursive: true, force: true });
           }
         } catch (e) {
           console.error('Error renaming files:', e);
