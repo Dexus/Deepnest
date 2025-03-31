@@ -1,20 +1,20 @@
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
-const { rmSync, renameSync } = require('fs');
-const { globSync } = require('glob');
-const nodeAbi = require('node-abi')
-const path = require('path');
+const { FusesPlugin } = require("@electron-forge/plugin-fuses");
+const { FuseV1Options, FuseVersion } = require("@electron/fuses");
+const { rmSync, renameSync } = require("fs");
+const { globSync } = require("glob");
+const nodeAbi = require("node-abi");
+const path = require("path");
 
 // Get the package version from package.json
-const packageJson = require('./package.json');
-const fs = require('fs');
+const packageJson = require("./package.json");
+const fs = require("fs");
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
 let makerArch = process.env.MAKER_ARCH || null;
 let makerPlatform = process.env.MAKER_PLATFORM || "darwin";
-console.log('Maker Arch:', makerArch);
-console.log('Maker Platform:', makerPlatform);
+console.log("Maker Arch:", makerArch);
+console.log("Maker Platform:", makerPlatform);
 for (let i = 0; i < process.argv.length; i++) {
   const arg = process.argv[i];
   if (arg === "--arch") {
@@ -24,32 +24,32 @@ for (let i = 0; i < process.argv.length; i++) {
     makerPlatform = process.argv[i + 1];
   }
 }
-console.log('after Maker Arch:', makerArch);
-console.log('after Maker Platform:', makerPlatform);
+console.log("after Maker Arch:", makerArch);
+console.log("after Maker Platform:", makerPlatform);
 
 let includeFiles = [
   // we need to make sure the project root directory is included
-  '.',
-  'main.js',
-  'presets.js',
-  'notification-service.js',
-  ...globSync('main/**'),
-  'LICENSE',
-  'LICENSE.md',
-  'package.json',
+  ".",
+  "main.js",
+  "presets.js",
+  "notification-service.js",
+  ...globSync("main/**"),
+  "LICENSE",
+  "LICENSE.md",
+  "package.json",
   // per electron-packager's docs, a set of files in the node_modules directory are always ignored
   // unless we are providing an IgnoreFunction. Because we want to ignore a lot more files than
   // packager does by default, we need to ensure that we're including the relevant node_modules
   // while ignoring what packager normally would.
   // See https://electron.github.io/electron-packager/main/interfaces/electronpackager.options.html#ignore.
-  ...globSync('node_modules/**', {
+  ...globSync("node_modules/**", {
     ignore: [
-      'node_modules/.bin/**',
-      'node_modules/electron/**',
-      'node_modules/electron-prebuilt/**',
-      'node_modules/electron-prebuilt-compile/**',
-      'node_modules/@deepnest/calculate-nfp/rust-minkowski/**',
-      'node_modules/@deepnest/calculate-nfp/prebuilt/**',
+      "node_modules/.bin/**",
+      "node_modules/electron/**",
+      "node_modules/electron-prebuilt/**",
+      "node_modules/electron-prebuilt-compile/**",
+      "node_modules/@deepnest/calculate-nfp/rust-minkowski/**",
+      "node_modules/@deepnest/calculate-nfp/prebuilt/**",
     ],
   }),
 ];
@@ -57,38 +57,111 @@ let includeFiles = [
 //console.log('Include files:', includeFiles.filter((f) => f.startsWith('node_modules')));
 const config = {
   hooks: {
-
-    packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
-      console.log('packageAfterCopy', buildPath, electronVersion, platform, arch);
-      console.log('platform', platform);
-      console.log('arch', arch);
+    packageAfterCopy: async (
+      config,
+      buildPath,
+      electronVersion,
+      platform,
+      arch
+    ) => {
+      console.log(
+        "packageAfterCopy",
+        buildPath,
+        electronVersion,
+        platform,
+        arch
+      );
+      console.log("platform", platform);
+      console.log("arch", arch);
       if (platform === "mas") {
         try {
           if (arch === "x64") {
-            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
-            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
-            const cwd5 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor", "node_modules");
-            renameSync(path.resolve(cwd3,'svg-preprocessor.darwin-x64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            const cwd3 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-x64"
+            );
+            const cwd4 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-arm64"
+            );
+            const cwd5 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor",
+              "node_modules"
+            );
+            renameSync(
+              path.resolve(cwd3, "svg-preprocessor.darwin-x64.node"),
+              path.resolve(
+                buildPath,
+                "node_modules",
+                "@deepnest",
+                "svg-preprocessor",
+                "svg-preprocessor.darwin-universal.node"
+              )
+            );
             rmSync(cwd3, { recursive: true, force: true });
             rmSync(cwd4, { recursive: true, force: true });
             rmSync(cwd5, { recursive: true, force: true });
           } else {
-            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
-            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
-            const cwd5 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor", "node_modules");
-            renameSync(path.resolve(cwd4,'svg-preprocessor.darwin-arm64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            const cwd3 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-x64"
+            );
+            const cwd4 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-arm64"
+            );
+            const cwd5 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor",
+              "node_modules"
+            );
+            renameSync(
+              path.resolve(cwd4, "svg-preprocessor.darwin-arm64.node"),
+              path.resolve(
+                buildPath,
+                "node_modules",
+                "@deepnest",
+                "svg-preprocessor",
+                "svg-preprocessor.darwin-universal.node"
+              )
+            );
             rmSync(cwd3, { recursive: true, force: true });
             rmSync(cwd4, { recursive: true, force: true });
             rmSync(cwd5, { recursive: true, force: true });
           }
         } catch (e) {
-          console.error('Error renaming files:', e);
+          console.error("Error renaming files:", e);
         }
       }
     },
-    packageAfterPrune: async (config, buildPath, electronVersion, platform, arch) => {
-      console.log('packageAfterPrune', buildPath, electronVersion, platform, arch);
-      const delay = ms => new Promise(res => setTimeout(res, ms));
+    packageAfterPrune: async (
+      config,
+      buildPath,
+      electronVersion,
+      platform,
+      arch
+    ) => {
+      console.log(
+        "packageAfterPrune",
+        buildPath,
+        electronVersion,
+        platform,
+        arch
+      );
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
       const readDirRecursive = (dir) => {
         fs.readdir(dir, { withFileTypes: true }, (err, files) => {
           if (err) {
@@ -106,13 +179,24 @@ const config = {
           }
         });
       };
-      const cwd = path.resolve(buildPath, 'node_modules', '@deepnest', 'calculate-nfp');
+      const cwd = path.resolve(
+        buildPath,
+        "node_modules",
+        "@deepnest",
+        "calculate-nfp"
+      );
+      const cwd_xattr = path.resolve(
+        buildPath,
+        "node_modules",
+        "@deepnest",
+        "fs-xattr"
+      );
       const includeFiles = [
-        'rust-minkowski',
-        'bin',
-        'src',
-        'build',
-        'node_modules',
+        "rust-minkowski",
+        "bin",
+        "src",
+        "build",
+        "node_modules",
       ];
       //console.log('packageAfterPrune', cwd);
 
@@ -120,51 +204,121 @@ const config = {
       for (const file of includeFiles) {
         const filePath = path.join(cwd, file);
         //console.log('includeFiles', filePath);
-        rmSync(filePath, { recursive: true, force: true });
+        try {
+          rmSync(filePath, { recursive: true, force: true });
+        } catch (e) {}
+        const filePath2 = path.join(cwd_xattr, file);
+        //console.log('includeFiles', filePath);
+        try {
+          rmSync(filePath2, { recursive: true, force: true });
+        } catch (e) {}
       }
 
       const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
       readDirRecursive(cwd2);
-      rmSync(path.resolve(cwd2,'bin'), { recursive: true, force: true });
+      rmSync(path.join(cwd2, "bin"), { recursive: true, force: true });
 
-
-      console.log('platform', platform);
-      console.log('arch', arch);
+      console.log("platform", platform);
+      console.log("arch", arch);
       if (platform === "mas") {
         try {
           if (arch === "x64") {
-            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
-            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
-            const cwd5 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor", "node_modules");
-            renameSync(path.resolve(cwd3,'svg-preprocessor.darwin-x64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            const cwd3 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-x64"
+            );
+            const cwd4 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-arm64"
+            );
+            const cwd5 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor",
+              "node_modules"
+            );
+            renameSync(
+              path.resolve(cwd3, "svg-preprocessor.darwin-x64.node"),
+              path.resolve(
+                buildPath,
+                "node_modules",
+                "@deepnest",
+                "svg-preprocessor",
+                "svg-preprocessor.darwin-universal.node"
+              )
+            );
             rmSync(cwd3, { recursive: true, force: true });
             rmSync(cwd4, { recursive: true, force: true });
             rmSync(cwd5, { recursive: true, force: true });
           } else {
-            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
-            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
-            const cwd5 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor", "node_modules");
-            renameSync(path.resolve(cwd4,'svg-preprocessor.darwin-arm64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            const cwd3 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-x64"
+            );
+            const cwd4 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor-darwin-arm64"
+            );
+            const cwd5 = path.resolve(
+              buildPath,
+              "node_modules",
+              "@deepnest",
+              "svg-preprocessor",
+              "node_modules"
+            );
+            renameSync(
+              path.resolve(cwd4, "svg-preprocessor.darwin-arm64.node"),
+              path.resolve(
+                buildPath,
+                "node_modules",
+                "@deepnest",
+                "svg-preprocessor",
+                "svg-preprocessor.darwin-universal.node"
+              )
+            );
             rmSync(cwd3, { recursive: true, force: true });
             rmSync(cwd4, { recursive: true, force: true });
             rmSync(cwd5, { recursive: true, force: true });
           }
         } catch (e) {
-          console.error('Error renaming files:', e);
+          console.error("Error renaming files:", e);
         }
       }
 
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
       const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
-      const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, 'electron');
+      const abiVersion = nodeAbi.getAbi(
+        packageJson.devDependencies.electron,
+        "electron"
+      );
       prebuilds.forEach(function (fpath) {
-          if (!fpath.endsWith('.node')) return; // only process .node files
-          if (!fpath.includes('abi'+abiVersion)) return; // ignore if abiVersion doesn't match
-          renameSync(fpath, path.join(path.dirname(fpath), '..', `${platform}.node`));
+        if (!fpath.endsWith(".node")) return; // only process .node files
+        if (!fpath.includes("abi" + abiVersion)) return; // ignore if abiVersion doesn't match
+        console.log(
+          "Renaming file:",
+          fpath,
+          "to",
+          path.join(path.dirname(fpath), "..", `${platform}.node`)
+        );
+        renameSync(
+          fpath,
+          path.join(path.dirname(fpath), "..", `${platform}.node`)
+        );
       });
       const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
-      prebuildDirs.forEach(dir => rmSync(dir, { recursive: true, force: true }));
+      prebuildDirs.forEach((dir) =>
+        rmSync(dir, { recursive: true, force: true })
+      );
       //await delay(2000);
       return void 0;
     },
@@ -174,13 +328,13 @@ const config = {
     appBundleId: "net.deepnest.app",
     appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net",
     executableName: "deepnest",
-    icon: path.resolve(__dirname, '_assets', 'icon'),
+    icon: path.resolve(__dirname, "_assets", "icon"),
     asar: true,
     ignore: (p) => {
-      if (p === '') {
+      if (p === "") {
         return false;
       }
-      let pResult = !includeFiles.includes(path.normalize(p.replace('/', '')));
+      let pResult = !includeFiles.includes(path.normalize(p.replace("/", "")));
       // if (pResult) {
       //   console.log('Checking path:', '"' + p.replace('/', '') + '"', '"' + path.normalize(p.replace('/', '')) + '"', pResult);
       // }
@@ -189,18 +343,18 @@ const config = {
     prune: true,
   },
   rebuildConfig: {
-    force: false
+    force: false,
   },
   makers: [
     {
-      name: '@electron-forge/maker-squirrel',
+      name: "@electron-forge/maker-squirrel",
       config: {
         name: `deepnest-${makerArch}`,
         setupExe: `deepnest-v${packageVersion}-${makerArch}-setup.exe`,
-        setupIcon: path.resolve(__dirname, '_assets', 'icon.ico'),
+        setupIcon: path.resolve(__dirname, "_assets", "icon.ico"),
         // loadingGif: path.resolve(__dirname, '_assets', 'loading.gif'),
       },
-    },/*
+    } /*
     {
       name: '@electron-forge/maker-appx',
       config: {
@@ -221,30 +375,30 @@ const config = {
         manufacturer: 'DeineAgentur UG (haftungsbeschränkt)',
         name: 'deepnest-next',
       }
-    }, */
+    }, */,
     {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin', 'win32', 'linux'],
+      name: "@electron-forge/maker-zip",
+      platforms: ["darwin", "win32", "linux"],
       config: (arch) => ({
         //macUpdateManifestBaseUrl: `https://dl.deepnest.app/deepnest-next/darwin/${arch}`
       }),
     },
     {
-      name: '@electron-forge/maker-dmg',
-      platforms: ['darwin'],
+      name: "@electron-forge/maker-dmg",
+      platforms: ["darwin"],
       config: {
         name: `deepnest-${packageVersion}-${makerPlatform}-${makerArch}`,
-        background: path.resolve(__dirname, '_assets', 'dmg-background.png'),
-        icon: path.join(__dirname, '_assets', 'icon.icns'),
-        format: 'ULFO',
+        background: path.resolve(__dirname, "_assets", "dmg-background.png"),
+        icon: path.join(__dirname, "_assets", "icon.icns"),
+        format: "ULFO",
         contents: () => [
           {
             x: 150,
             y: 180,
-            type: 'file',
+            type: "file",
             path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
           },
-          { x: 350, y: 180, type: 'link', path: '/Applications' },
+          { x: 350, y: 180, type: "link", path: "/Applications" },
         ],
         additionalDMGOptions: {
           window: {
@@ -254,42 +408,49 @@ const config = {
             },
           },
         },
-      }
+      },
     },
     {
-      name: '@electron-forge/maker-pkg',
-      platforms: ['darwin', 'mas'],
-      config: {}
+      name: "@electron-forge/maker-pkg",
+      platforms: ["darwin", "mas"],
+      config: {},
     },
     {
-      name: '@electron-forge/maker-flatpak',
+      name: "@electron-forge/maker-flatpak",
       config: {
         options: {
-          categories: ['Education', 'Graphics', 'Utility'],
-          mimeType: ['image/x-dxf', 'image/x-dwg', 'image/svg+xml', 'application/postscript', 'image/vnd.dxf', 'image/vnd.dwg'],
-        }
-      }
+          categories: ["Education", "Graphics", "Utility"],
+          mimeType: [
+            "image/x-dxf",
+            "image/x-dwg",
+            "image/svg+xml",
+            "application/postscript",
+            "image/vnd.dxf",
+            "image/vnd.dwg",
+          ],
+        },
+      },
     },
     {
-      name: '@electron-forge/maker-deb',
+      name: "@electron-forge/maker-deb",
       config: {
         options: {
-          maintainer: 'Josef Fröhle',
-          homepage: 'https://www.deepnest.net',
-          categories: ['Education', 'Graphics', 'Utility'],
-          section: 'graphics',
-        }
-      }
+          maintainer: "Josef Fröhle",
+          homepage: "https://www.deepnest.net",
+          categories: ["Education", "Graphics", "Utility"],
+          section: "graphics",
+        },
+      },
     },
     {
-      name: '@electron-forge/maker-rpm',
+      name: "@electron-forge/maker-rpm",
       config: {
         options: {
-          homepage: 'https://www.deepnest.net',
-          categories: ['Education', 'Graphics', 'Utility'],
-        }
-      }
-    },/*
+          homepage: "https://www.deepnest.net",
+          categories: ["Education", "Graphics", "Utility"],
+        },
+      },
+    } /*
     {
       name: '@electron-forge/maker-snap',
       config: {
@@ -303,15 +464,15 @@ const config = {
         grade: 'stable',
       }
     },
-    */
+    */,
   ],
   publishers: [
     {
-      name: '@electron-forge/publisher-github',
+      name: "@electron-forge/publisher-github",
       config: {
         repository: {
-          owner: 'Dexus',
-          name: 'Deepnest',
+          owner: "Dexus",
+          name: "Deepnest",
         },
         draft: true,
         prerelease: false,
@@ -336,14 +497,15 @@ const config = {
   ],
   plugins: [
     {
-      name: '@electron-forge/plugin-auto-unpack-natives',
+      name: "@electron-forge/plugin-auto-unpack-natives",
       config: {},
     },
     // Fuses are used to enable/disable various Electron functionality
     // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
-      resetAdHocDarwinSignature: makerPlatform === "darwin" && makerArch == "arm64",
+      resetAdHocDarwinSignature:
+        makerPlatform === "darwin" && makerArch == "arm64",
       [FuseV1Options.RunAsNode]: true,
       [FuseV1Options.EnableCookieEncryption]: true,
       [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
@@ -357,42 +519,54 @@ const config = {
 // Configure code signing based on environment
 if (process.env.CI) {
   // CI Environment - GitHub Actions
-  if (process.platform === 'darwin' || makerPlatform === 'darwin' || makerPlatform === 'mas') {
+  if (
+    process.platform === "darwin" ||
+    makerPlatform === "darwin" ||
+    makerPlatform === "mas"
+  ) {
     // Base signing configuration
     const baseSignConfig = {
       hardenedRuntime: true,
-      gatekeeperAssess: false
+      gatekeeperAssess: false,
     };
-    
+
     // Configure for MAS vs regular macOS builds
-    if (makerPlatform === 'mas') {
+    if (makerPlatform === "mas") {
       // For MAS builds, use dedicated MAS identity
       if (process.env.APPLE_MAS_IDENTITY) {
         baseSignConfig.identity = process.env.APPLE_MAS_IDENTITY;
       }
-      
+
       config.packagerConfig.osxSign = {
         ...baseSignConfig,
-        entitlements: path.join(__dirname, '_assets', 'entitlements.mas.plist'),
-        'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.mas.inherit.plist'),
-        'signature-flags': 'library'
+        entitlements: path.join(__dirname, "_assets", "entitlements.mas.plist"),
+        "entitlements-inherit": path.join(
+          __dirname,
+          "_assets",
+          "entitlements.mas.inherit.plist"
+        ),
+        "signature-flags": "library",
       };
-      
+
       // Update PKG maker for MAS builds
       for (const maker of config.makers) {
-        if (maker.name === '@electron-forge/maker-pkg') {
+        if (maker.name === "@electron-forge/maker-pkg") {
           maker.config = {
             ...maker.config,
-            platform: 'mas',
-            provisioningProfile: path.join(__dirname, '_assets', 'embedded.provisionprofile'),
-            name: `deepnest-${packageVersion}-${makerArch}-mas` // new: pkg name for MAS build
+            platform: "mas",
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
+            name: `deepnest-${packageVersion}-${makerArch}-mas`, // new: pkg name for MAS build
           };
-          
+
           // Use dedicated MAS installer identity
           if (process.env.APPLE_MAS_INSTALLER_IDENTITY) {
             maker.config.identity = process.env.APPLE_MAS_INSTALLER_IDENTITY;
           }
-          
+
           if (process.env.APPLE_KEYCHAIN_PATH) {
             maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
           }
@@ -403,37 +577,45 @@ if (process.env.CI) {
       if (process.env.APPLE_DEVELOPER_ID_APPLICATION) {
         baseSignConfig.identity = process.env.APPLE_DEVELOPER_ID_APPLICATION;
       }
-      
+
       config.packagerConfig.osxSign = {
         ...baseSignConfig,
-        entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
-        'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.inherit.plist')
+        entitlements: path.join(__dirname, "_assets", "entitlements.plist"),
+        "entitlements-inherit": path.join(
+          __dirname,
+          "_assets",
+          "entitlements.inherit.plist"
+        ),
       };
-      
+
       // Add notarization if all required environment variables exist
-      if (process.env.APPLE_API_KEY_ID && process.env.APPLE_API_ISSUER && process.env.NOTARIZATION_KEY_PATH) {
+      if (
+        process.env.APPLE_API_KEY_ID &&
+        process.env.APPLE_API_ISSUER &&
+        process.env.NOTARIZATION_KEY_PATH
+      ) {
         config.packagerConfig.osxNotarize = {
-          tool: 'notarytool',
+          tool: "notarytool",
           appleApiKey: process.env.NOTARIZATION_KEY_PATH,
           appleApiKeyId: process.env.APPLE_API_KEY_ID,
-          appleApiIssuer: process.env.APPLE_API_ISSUER
+          appleApiIssuer: process.env.APPLE_API_ISSUER,
         };
       }
-      
+
       // Update PKG maker for regular builds
       for (const maker of config.makers) {
-        if (maker.name === '@electron-forge/maker-pkg') {
+        if (maker.name === "@electron-forge/maker-pkg") {
           maker.config = {
             ...maker.config,
-            platform: 'darwin',
-            name: `deepnest-${packageVersion}-${makerArch}-darwin` // new: pkg name for darwin build
+            platform: "darwin",
+            name: `deepnest-${packageVersion}-${makerArch}-darwin`, // new: pkg name for darwin build
           };
-          
+
           // Use dedicated Developer ID installer identity
           if (process.env.APPLE_DEVELOPER_ID_INSTALLER) {
             maker.config.identity = process.env.APPLE_DEVELOPER_ID_INSTALLER;
           }
-          
+
           if (process.env.APPLE_KEYCHAIN_PATH) {
             maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
           }
@@ -441,44 +623,55 @@ if (process.env.CI) {
       }
     }
   }
-} else if (process.platform === 'darwin') {
+} else if (process.platform === "darwin") {
   // Local development on macOS
   config.packagerConfig.osxSign = {
     hardenedRuntime: true,
     gatekeeperAssess: false,
-    entitlements: path.join(__dirname, '_assets', 'entitlements.plist'),
-    'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.inherit.plist')
+    entitlements: path.join(__dirname, "_assets", "entitlements.plist"),
+    "entitlements-inherit": path.join(
+      __dirname,
+      "_assets",
+      "entitlements.inherit.plist"
+    ),
   };
-  
+
   // For local MAS builds
-  if (makerPlatform === 'mas') {
+  if (makerPlatform === "mas") {
     config.packagerConfig.osxSign = {
       hardenedRuntime: true,
       gatekeeperAssess: false,
-      entitlements: path.join(__dirname, '_assets', 'entitlements.mas.plist'),
-      'entitlements-inherit': path.join(__dirname, '_assets', 'entitlements.mas.inherit.plist'),
-      'signature-flags': 'library'
+      entitlements: path.join(__dirname, "_assets", "entitlements.mas.plist"),
+      "entitlements-inherit": path.join(
+        __dirname,
+        "_assets",
+        "entitlements.mas.inherit.plist"
+      ),
+      "signature-flags": "library",
     };
-    
+
     for (const maker of config.makers) {
-      if (maker.name === '@electron-forge/maker-pkg') {
-        maker.config.platform = 'mas';
+      if (maker.name === "@electron-forge/maker-pkg") {
+        maker.config.platform = "mas";
         maker.config.name = `deepnest-${packageVersion}-${makerArch}-mas`; // new: pkg name for MAS build in local dev
         // Local dev may have embedded.provisionprofile in the _assets directory
-        const profilePath = path.join(__dirname, '_assets', 'embedded.provisionprofile');
+        const profilePath = path.join(
+          __dirname,
+          "_assets",
+          "embedded.provisionprofile"
+        );
         try {
-          if (require('fs').existsSync(profilePath)) {
+          if (require("fs").existsSync(profilePath)) {
             maker.config.provisioningProfile = profilePath;
           }
         } catch (e) {
-          console.warn('Provisioning profile not found for local MAS build');
+          console.warn("Provisioning profile not found for local MAS build");
         }
       }
     }
-  }
-  else {
+  } else {
     for (const maker of config.makers) {
-      if (maker.name === '@electron-forge/maker-pkg') {
+      if (maker.name === "@electron-forge/maker-pkg") {
         maker.config.name = `deepnest-${packageVersion}-${makerArch}-darwin`; // new: pkg name for darwin build in local dev
       }
     }

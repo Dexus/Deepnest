@@ -16,6 +16,7 @@ jobs:
       BUILD_NUMBER: ${{ github.run_number }}
       UPDATE_FEED_OWNER: Dexus
       UPDATE_FEED_REPOSITORY: Deepnest
+      PREBUILDS_ONLY: 1
     strategy:
       matrix:
         os:
