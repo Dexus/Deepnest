@@ -82,6 +82,11 @@
     "graceful-fs": "4.2.11",
     "marked": "^15.0.7"
   },
+  "overrides": {
+    "appdmg": {
+      "fs-xattr": "npm:@deepnest/fs-xattr@0.41.0"
+    }
+  },
   "files": [
     "main.js",
     "main/**/*",
