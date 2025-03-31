@@ -6,6 +6,7 @@ const path = require('path');
 
 // Get the package version from package.json
 const packageJson = require('./package.json');
+const fs = require('fs');
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
@@ -56,6 +57,7 @@ let includeFiles = [
 const config = {
   hooks: {
     packageAfterPrune: async (config, buildPath, electronVersion, platform, arch) => {
+      const delay = ms => new Promise(res => setTimeout(res, ms));
       const cwd = path.resolve(buildPath, 'node_modules', '@deepnest', 'calculate-nfp');
       const includeFiles = [
         'rust-minkowski',
@@ -73,9 +75,29 @@ const config = {
         rmSync(filePath, { recursive: true, force: true });
       }
 
+      const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
+      cdw2.log("packageAfterPrune", cwd2);
+      const readDirRecursive = (dir) => {
+        fs.readdir(dir, { withFileTypes: true }, (err, files) => {
+          if (err) {
+            console.error("Error reading directory:", err);
+          } else {
+            files.forEach((file) => {
+              const fullPath = path.join(dir, file.name);
+              if (file.isDirectory()) {
+                console.log("Directory:", fullPath);
+                readDirRecursive(fullPath);
+              } else {
+                console.log("File:", fullPath);
+              }
+            });
+          }
+        });
+      };
+
+      readDirRecursive(cwd2);
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
-      const delay = ms => new Promise(res => setTimeout(res, ms));
       await delay(2000);
       return void 0;
     },
