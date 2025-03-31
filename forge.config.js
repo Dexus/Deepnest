@@ -57,7 +57,33 @@ let includeFiles = [
 //console.log('Include files:', includeFiles.filter((f) => f.startsWith('node_modules')));
 const config = {
   hooks: {
+
+    packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
+      console.log('packageAfterCopy', buildPath, electronVersion, platform, arch);
+      console.log('platform', platform);
+      console.log('arch', arch);
+      if (platform === "mas") {
+        try {
+          if (arch === "x64") {
+            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
+            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+            renameSync(path.resolve(cwd3,'svg-preprocessor.darwin-x64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            rmSync(cwd3, { recursive: true, force: true });
+            rmSync(cwd3, { recursive: true, force: true });
+          } else {
+            const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
+            const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+            renameSync(path.resolve(cwd4,'svg-preprocessor.darwin-arm64.node'), path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor",'svg-preprocessor.darwin-universal.node'));
+            rmSync(cwd3, { recursive: true, force: true });
+            rmSync(cwd4, { recursive: true, force: true });
+          }
+        } catch (e) {
+          console.error('Error renaming files:', e);
+        }
+      }
+    },
     packageAfterPrune: async (config, buildPath, electronVersion, platform, arch) => {
+      console.log('packageAfterPrune', buildPath, electronVersion, platform, arch);
       const delay = ms => new Promise(res => setTimeout(res, ms));
       const readDirRecursive = (dir) => {
         fs.readdir(dir, { withFileTypes: true }, (err, files) => {
@@ -96,7 +122,7 @@ const config = {
       const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr", "bin");
       rmSync(cwd2, { recursive: true, force: true });
 
-      
+
       console.log('platform', platform);
       console.log('arch', arch);
       if (platform === "mas") {
