@@ -188,7 +188,6 @@ const config = {
       const cwd_xattr = path.resolve(
         buildPath,
         "node_modules",
-        "@deepnest",
         "fs-xattr"
       );
       const includeFiles = [
@@ -292,33 +291,34 @@ const config = {
         } catch (e) {
           console.error("Error renaming files:", e);
         }
-      }
 
-      //console.log('includeFiles', includeFiles);
-      //console.log('ignoreFiles', ignoreFiles);
-      const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
-      const abiVersion = nodeAbi.getAbi(
-        packageJson.devDependencies.electron,
-        "electron"
-      );
-      prebuilds.forEach(function (fpath) {
-        if (!fpath.endsWith(".node")) return; // only process .node files
-        if (!fpath.includes("abi" + abiVersion)) return; // ignore if abiVersion doesn't match
-        console.log(
-          "Renaming file:",
-          fpath,
-          "to",
-          path.join(path.dirname(fpath), "..", `${platform}.node`)
+        //console.log('includeFiles', includeFiles);
+        //console.log('ignoreFiles', ignoreFiles);
+        const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
+        const abiVersion = nodeAbi.getAbi(
+          packageJson.devDependencies.electron,
+          "electron"
         );
-        renameSync(
-          fpath,
-          path.join(path.dirname(fpath), "..", `${platform}.node`)
+        prebuilds.forEach(function (fpath) {
+          if (!fpath.endsWith(".node")) return; // only process .node files
+          if (!fpath.includes("darwin")) return; // ignore if abiVersion doesn't match
+          if (!fpath.includes("abi" + abiVersion)) return; // ignore if abiVersion doesn't match
+          console.log(
+            "Renaming file:",
+            fpath,
+            "to",
+            path.join(path.dirname(fpath), "..", `${darwin}.node`)
+          );
+          renameSync(
+            fpath,
+            path.join(path.dirname(fpath), "..", `${darwin}.node`)
+          );
+        });
+        const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
+        prebuildDirs.forEach((dir) =>
+          rmSync(dir, { recursive: true, force: true })
         );
-      });
-      const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
-      prebuildDirs.forEach((dir) =>
-        rmSync(dir, { recursive: true, force: true })
-      );
+      }
       //await delay(2000);
       return void 0;
     },
