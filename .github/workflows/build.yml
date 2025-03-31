@@ -123,7 +123,6 @@ jobs:
         env:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
-          CERTIFICATE_INSTALL_PATH: "${{ runner.temp }}/signing_cert.p12" # same file used for both roles
           APPLE_MAC_CERT: ${{ secrets.APPLE_MAC_CERT }}
           APPLE_SIGN_CERT_PASS: ${{ secrets.APPLE_MAC_CERT_PASS }}
           APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}

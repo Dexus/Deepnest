@@ -94,12 +94,12 @@ jobs:
         if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
         run: |
           # Create temporary keychain
-          security create-keychain -p "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN"
-          security set-keychain-settings -lut 3600 "$APPLE_KEYCHAIN"
-          security unlock-keychain -p "$KEYCHAIN_PASS" "$APPLE_KEYCHAIN"
-          security default-keychain -s "$APPLE_KEYCHAIN"
+          security create-keychain -p "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
+          security set-keychain-settings -lut 3600 "$APPLE_KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
+          security default-keychain -s "$APPLE_KEYCHAIN_PATH"
 
-          # Import signing certificate (using one p12 file for both)
+          # Import signing certificate (using one p12 for both app and installer)
           echo -n "$APPLE_MAC_CERT" | base64 --decode -o "$CERTIFICATE_PATH"
           security import "$CERTIFICATE_PATH" -P "$APPLE_SIGN_CERT_PASS" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/sbin/installer -k "$APPLE_KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple:,codesign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" "$APPLE_KEYCHAIN_PATH"
@@ -113,14 +113,12 @@ jobs:
           if [[ "${{ matrix.target }}" == "mas" ]]; then
             echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_assets/embedded.provisionprofile"
           fi
-          
           security find-identity "$APPLE_KEYCHAIN_PATH" -v > /dev/null || true
           security find-identity -p codesigning "$APPLE_KEYCHAIN_PATH" -v > /dev/null || true
           security find-identity -p installer "$APPLE_KEYCHAIN_PATH" -v > /dev/null || true
         env:
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           CERTIFICATE_PATH: "${{ runner.temp }}/signing_cert.p12"
-          CERTIFICATE_INSTALL_PATH: "${{ runner.temp }}/signing_cert.p12" # same file used for both roles
           APPLE_MAC_CERT: ${{ secrets.APPLE_MAC_CERT }}
           APPLE_SIGN_CERT_PASS: ${{ secrets.APPLE_MAC_CERT_PASS }}
           APPLE_KEYCHAIN: ${{ secrets.APPLE_KEYCHAIN }}
