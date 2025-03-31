@@ -76,7 +76,7 @@ const config = {
       }
 
       const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
-      cdw2.log("packageAfterPrune", cwd2);
+      console.log("packageAfterPrune", cwd2);
       const readDirRecursive = (dir) => {
         fs.readdir(dir, { withFileTypes: true }, (err, files) => {
           if (err) {
