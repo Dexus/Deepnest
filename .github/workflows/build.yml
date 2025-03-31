@@ -89,8 +89,6 @@ jobs:
           fi
           if [[ "${{ matrix.os }}" == "macos-latest" || "${{ matrix.os }}" == "macos-13" ]]; then
             brew install python-setuptools;
-            yarn add --ignore-platform @deepnest/svg-preprocessor-darwin-arm64
-            yarn add --ignore-platform @deepnest/svg-preprocessor-darwin-x64
           fi
           # if [ "${{ matrix.os }}" == "windows-latest" ]; then
           #   choco install -y nsis;
