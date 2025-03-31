@@ -64,6 +64,12 @@ const config = {
       platform,
       arch
     ) => {
+      // Check each node_module for a gyp build and print native addon modules
+      const nodeModulesPath = path.join(buildPath, 'node_modules');
+      const gypFiles = globSync(`${nodeModulesPath}/**/binding.gyp`);
+      gypFiles.forEach((gypFile) => {
+        console.log("Native addon detected in module:", path.dirname(gypFile));
+      });
       console.log(
         "packageAfterPrune",
         buildPath,
