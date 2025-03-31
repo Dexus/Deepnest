@@ -59,6 +59,23 @@ const config = {
   hooks: {
     packageAfterPrune: async (config, buildPath, electronVersion, platform, arch) => {
       const delay = ms => new Promise(res => setTimeout(res, ms));
+      const readDirRecursive = (dir) => {
+        fs.readdir(dir, { withFileTypes: true }, (err, files) => {
+          if (err) {
+            console.error("Error reading directory:", err);
+          } else {
+            files.forEach((file) => {
+              const fullPath = path.join(dir, file.name);
+              if (file.isDirectory()) {
+                console.log("Directory:", fullPath);
+                readDirRecursive(fullPath);
+              } else {
+                console.log("File:", fullPath);
+              }
+            });
+          }
+        });
+      };
       const cwd = path.resolve(buildPath, 'node_modules', '@deepnest', 'calculate-nfp');
       const includeFiles = [
         'rust-minkowski',
@@ -78,25 +95,13 @@ const config = {
 
       const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr", "bin");
       rmSync(cwd2, { recursive: true, force: true });
-      // console.log("packageAfterPrune", cwd2);
-      // const readDirRecursive = (dir) => {
-      //   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
-      //     if (err) {
-      //       console.error("Error reading directory:", err);
-      //     } else {
-      //       files.forEach((file) => {
-      //         const fullPath = path.join(dir, file.name);
-      //         if (file.isDirectory()) {
-      //           console.log("Directory:", fullPath);
-      //           readDirRecursive(fullPath);
-      //         } else {
-      //           console.log("File:", fullPath);
-      //         }
-      //       });
-      //     }
-      //   });
-      // };
-      // readDirRecursive(cwd2);
+      console.log('platform', platform);
+      console.log('arch', arch);
+      const cwd3 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-arm64");
+      readDirRecursive(cwd3);
+      const cwd4 = path.resolve(buildPath, "node_modules", "@deepnest", "svg-preprocessor-darwin-x64");
+      readDirRecursive(cwd4);
+
 
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
