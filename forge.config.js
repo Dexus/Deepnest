@@ -111,6 +111,7 @@ const config = {
         execSync(`npm install --cpu ${arch} --os ${myPlatform}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
       } catch (error) {
         console.error('Error during npm install:', error.message);
+        execSync(`cat /Users/runner/.npm/_logs/*`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
       }
       delay(5000);
 
