@@ -167,7 +167,7 @@ const config = {
       name: '@electron-forge/maker-dmg',
       platforms: ['darwin'],
       config: {
-        name: `deepnest-${packageVersion}-${makerPlatform}-${makerArch}`,
+        name: `deepnest-darwin-${makerArch}`,
         background: path.resolve(__dirname, '_assets', 'dmg-background.png'),
         icon: path.join(__dirname, '_assets', 'icon.icns'),
         format: 'ULFO',
