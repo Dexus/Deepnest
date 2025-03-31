@@ -1,6 +1,7 @@
 const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 const { rmSync, renameSync } = require("fs");
+const { execSync } = require('child_process');
 const { globSync } = require("glob");
 const nodeAbi = require("node-abi");
 const path = require("path");
@@ -64,10 +65,12 @@ const config = {
       platform,
       arch
     ) => {
-      const { execSync } = require('child_process');
-      // Execute yarn install with the specified arch in the build folder
-      execSync(`yarn install`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64' } });
-
+      try {
+        // Execute yarn install with the specified arch in the build folder
+        execSync(`yarn install`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64' } });
+      } catch (error) {
+        console.error('Error during yarn install:', error.message);
+      }
 
       // Check each node_module for a gyp build and print native addon modules
       const nodeModulesPath = path.join(buildPath, 'node_modules');
