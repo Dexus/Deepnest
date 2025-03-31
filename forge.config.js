@@ -22,8 +22,8 @@ for (let i = 0; i < process.argv.length; i++) {
     makerPlatform = process.argv[i + 1];
   }
 }
-console.log('Maker Arch:', makerArch);
-console.log('Maker Platform:', makerPlatform);
+console.log('after Maker Arch:', makerArch);
+console.log('after Maker Platform:', makerPlatform);
 
 let includeFiles = [
   // we need to make sure the project root directory is included
@@ -85,6 +85,7 @@ const config = {
     appBundleId: "net.deepnest.app",
     appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net",
     executableName: "deepnest",
+    icon: path.resolve(__dirname, '_assets', 'icon'),
     asar: true,
     ignore: (p) => {
       if (p === '') {
@@ -295,7 +296,7 @@ if (process.env.CI) {
             ...maker.config,
             platform: 'mas',
             provisioningProfile: path.join(__dirname, '_assets', 'embedded.provisionprofile'),
-            name: `deepnest-${packageVersion}-pkg-mas` // new: pkg name for MAS build
+            name: `deepnest-${packageVersion}-${makerArch}-mas` // new: pkg name for MAS build
           };
           
           // Use dedicated MAS installer identity
@@ -336,7 +337,7 @@ if (process.env.CI) {
           maker.config = {
             ...maker.config,
             platform: 'darwin',
-            name: `deepnest-${packageVersion}-pkg-darwin` // new: pkg name for darwin build
+            name: `deepnest-${packageVersion}-${makerArch}-darwin` // new: pkg name for darwin build
           };
           
           // Use dedicated Developer ID installer identity
@@ -373,7 +374,7 @@ if (process.env.CI) {
     for (const maker of config.makers) {
       if (maker.name === '@electron-forge/maker-pkg') {
         maker.config.platform = 'mas';
-        maker.config.name = `deepnest-${packageVersion}-pkg-mas`; // new: pkg name for MAS build in local dev
+        maker.config.name = `deepnest-${packageVersion}-${makerArch}-mas`; // new: pkg name for MAS build in local dev
         // Local dev may have embedded.provisionprofile in the _assets directory
         const profilePath = path.join(__dirname, '_assets', 'embedded.provisionprofile');
         try {
@@ -389,7 +390,7 @@ if (process.env.CI) {
   else {
     for (const maker of config.makers) {
       if (maker.name === '@electron-forge/maker-pkg') {
-        maker.config.name = `deepnest-${packageVersion}-pkg-darwin`; // new: pkg name for darwin build in local dev
+        maker.config.name = `deepnest-${packageVersion}-${makerArch}-darwin`; // new: pkg name for darwin build in local dev
       }
     }
   }
