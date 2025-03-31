@@ -153,7 +153,7 @@ jobs:
             yarn publish:dry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            yarn publish:dry --arch ${{ matrix.arch }} --platform mas
+            yarn publish:dry --arch universal --platform mas
           fi
 
       - name: Publish From Dry (${{ matrix.arch }})
@@ -183,7 +183,7 @@ jobs:
             yarn publish:fromdry --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            yarn publish:fromdry --arch ${{ matrix.arch }} --platform mas
+            yarn publish:fromdry --arch universal --platform mas
           fi
 
       # TODO: add AppImage for linux if we can get snap and/or flatpak to work
