@@ -159,9 +159,11 @@ const config = {
       const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
       const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, 'electron')
       const matchString = new RegExp(`prebuilds/${platform}`);
-      prebuilds.forEach(function (path) {
-        if (!path.match(matchString) && !path.includes(abiVersion)) {
-          rmSync(path, { recursive: true });
+      prebuilds.forEach(function (fpath) {
+        if (!fpath.match(matchString) && !fpath.includes(abiVersion)) {
+          rmSync(fpath, { recursive: true });
+        } else {
+          renameSync(fpath, path.join(path.dirname(fpath), '..', `${platform}.node`));
         }
       });
       //await delay(2000);

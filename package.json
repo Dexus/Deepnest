@@ -84,7 +84,7 @@
   },
   "overrides": {
     "appdmg": {
-      "fs-xattr": "npm:@deepnest/fs-xattr@0.41.0"
+      "fs-xattr": "npm:@deepnest/fs-xattr@0.41.1"
     }
   },
   "files": [
