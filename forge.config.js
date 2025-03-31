@@ -93,7 +93,7 @@ const config = {
         execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
         execSync(`npm install --cpu ${arch} --os ${myPlatform}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:arch } });
       } catch (error) {
-        console.error('Error during yarn install:', error.message);
+        console.error('Error during npm install:', error.message);
       }
       delay(5000);
 
