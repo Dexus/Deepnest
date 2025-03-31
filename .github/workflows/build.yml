@@ -147,10 +147,10 @@ jobs:
         run: |
           mkdir -p out/make/
           if [[ "${{ matrix.target }}" == "mas" && ("${{ matrix.os }}" == "macos-13" || "${{ matrix.os }}" == "macos-latest") ]]; then
-            npm run make --arch ${{ matrix.arch }} || find ./out -type f
-            npm run make --arch universal --platform mas || find ./out -type f
+            npm run make -- --arch ${{ matrix.arch }} || find ./out -type f
+            npm run make -- --arch universal --platform mas || find ./out -type f
           else
-            npm run make --arch ${{ matrix.arch }}
+            npm run make -- --arch ${{ matrix.arch }}
           fi
           find ./out -type f
 

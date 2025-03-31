@@ -143,16 +143,16 @@ jobs:
           MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
-            npm run publish:dry --arch ${{ matrix.arch }}
+            npm run publish:dry -- --arch ${{ matrix.arch }}
           fi
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            npm run publish:dry --arch ${{ matrix.arch }}
+            npm run publish:dry -- --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
-            npm run publish:dry --arch ${{ matrix.arch }}
+            npm run publish:dry -- --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            npm run publish:dry --arch universal --platform mas
+            npm run publish:dry -- --arch universal --platform mas
           fi
 
       - name: Publish From Dry (${{ matrix.arch }})
@@ -173,16 +173,16 @@ jobs:
           MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
-            npm run publish:fromdry --arch ${{ matrix.arch }}
+            npm run publish:fromdry -- --arch ${{ matrix.arch }}
           fi
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            npm run publish:fromdry --arch ${{ matrix.arch }}
+            npm run publish:fromdry -- --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
-            npm run publish:fromdry --arch ${{ matrix.arch }}
+            npm run publish:fromdry -- --arch ${{ matrix.arch }}
           fi
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            npm run publish:fromdry --arch universal --platform mas
+            npm run publish:fromdry -- --arch universal --platform mas
           fi
 
       # TODO: add AppImage for linux if we can get snap and/or flatpak to work
