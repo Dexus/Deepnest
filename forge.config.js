@@ -10,17 +10,20 @@ const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
 let makerArch = process.env.MAKER_ARCH || null;
-let platform = process.env.MAKER_PLATFORM || "darwin";
-
+let makerPlatform = process.env.MAKER_PLATFORM || "darwin";
+console.log('Maker Arch:', makerArch);
+console.log('Maker Platform:', makerPlatform);
 for (let i = 0; i < process.argv.length; i++) {
   const arg = process.argv[i];
   if (arg === "--arch") {
     makerArch = process.argv[i + 1];
   }
   if (arg === "--platform") {
-    platform = process.argv[i + 1];
+    makerPlatform = process.argv[i + 1];
   }
 }
+console.log('Maker Arch:', makerArch);
+console.log('Maker Platform:', makerPlatform);
 
 let includeFiles = [
   // we need to make sure the project root directory is included
@@ -249,7 +252,7 @@ const config = {
     // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
-      resetAdHocDarwinSignature: process.platform === "darwin" && makerArch == "arm64",
+      resetAdHocDarwinSignature: makerPlatform === "darwin" && makerArch == "arm64",
       [FuseV1Options.RunAsNode]: true,
       [FuseV1Options.EnableCookieEncryption]: true,
       [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
@@ -263,7 +266,7 @@ const config = {
 // Configure code signing based on environment
 if (process.env.CI) {
   // CI Environment - GitHub Actions
-  if (process.platform === 'darwin' || platform === 'darwin' || platform === 'mas') {
+  if (process.platform === 'darwin' || makerPlatform === 'darwin' || makerPlatform === 'mas') {
     // Base signing configuration
     const baseSignConfig = {
       hardenedRuntime: true,
@@ -271,7 +274,7 @@ if (process.env.CI) {
     };
     
     // Configure for MAS vs regular macOS builds
-    if (platform === 'mas') {
+    if (makerPlatform === 'mas') {
       // For MAS builds, use dedicated MAS identity
       if (process.env.APPLE_MAS_IDENTITY) {
         baseSignConfig.identity = process.env.APPLE_MAS_IDENTITY;
@@ -357,7 +360,7 @@ if (process.env.CI) {
   };
   
   // For local MAS builds
-  if (platform === 'mas') {
+  if (makerPlatform === 'mas') {
     config.packagerConfig.osxSign = {
       hardenedRuntime: true,
       gatekeeperAssess: false,
