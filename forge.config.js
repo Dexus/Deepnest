@@ -66,7 +66,7 @@ const config = {
     ) => {
       const { execSync } = require('child_process');
       // Execute yarn install with the specified arch in the build folder
-      execSync(`yarn install ${arch}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64' } });
+      execSync(`yarn install`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64' } });
 
 
       // Check each node_module for a gyp build and print native addon modules
