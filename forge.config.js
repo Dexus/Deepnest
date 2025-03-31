@@ -64,6 +64,11 @@ const config = {
       platform,
       arch
     ) => {
+      const { execSync } = require('child_process');
+      // Execute yarn install with the specified arch in the build folder
+      execSync(`yarn install --arch ${arch}`, { cwd: buildPath, stdio: 'inherit' });
+
+      
       // Check each node_module for a gyp build and print native addon modules
       const nodeModulesPath = path.join(buildPath, 'node_modules');
       const gypFiles = globSync(`${nodeModulesPath}/**/binding.gyp`);
