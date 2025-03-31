@@ -96,7 +96,7 @@ const config = {
       //   });
       // };
       // readDirRecursive(cwd2);
-      
+
       //console.log('includeFiles', includeFiles);
       //console.log('ignoreFiles', ignoreFiles);
       await delay(2000);
@@ -176,7 +176,7 @@ const config = {
             x: 150,
             y: 180,
             type: 'file',
-            path: `${process.cwd()}/out/deepnest-${makerPlatform}-${makerArch}/deepnest.app`,
+            path: `${process.cwd()}/out/deepnest-${packageVersion}-${makerPlatform}-${makerArch}/deepnest.app`,
           },
           { x: 350, y: 180, type: 'link', path: '/Applications' },
         ],
