@@ -237,7 +237,8 @@ const config = {
         bucket: 'my-bucket',
         public: true
       }
-    },*/
+    },
+    */
   ],
   plugins: [
     {
@@ -289,7 +290,8 @@ if (process.env.CI) {
           maker.config = {
             ...maker.config,
             platform: 'mas',
-            provisioningProfile: path.join(__dirname, '_assets', 'embedded.provisionprofile')
+            provisioningProfile: path.join(__dirname, '_assets', 'embedded.provisionprofile'),
+            name: 'deepnest-pkg-mas' // new: pkg name for MAS build
           };
           
           // Use dedicated MAS installer identity
@@ -329,7 +331,8 @@ if (process.env.CI) {
         if (maker.name === '@electron-forge/maker-pkg') {
           maker.config = {
             ...maker.config,
-            platform: 'darwin'
+            platform: 'darwin',
+            name: 'deepnest-pkg-darwin' // new: pkg name for darwin build
           };
           
           // Use dedicated Developer ID installer identity
@@ -366,6 +369,7 @@ if (process.env.CI) {
     for (const maker of config.makers) {
       if (maker.name === '@electron-forge/maker-pkg') {
         maker.config.platform = 'mas';
+        maker.config.name = 'deepnest-pkg-mas'; // new: pkg name for MAS build in local dev
         // Local dev may have embedded.provisionprofile in the _assets directory
         const profilePath = path.join(__dirname, '_assets', 'embedded.provisionprofile');
         try {
@@ -375,6 +379,13 @@ if (process.env.CI) {
         } catch (e) {
           console.warn('Provisioning profile not found for local MAS build');
         }
+      }
+    }
+  }
+  else {
+    for (const maker of config.makers) {
+      if (maker.name === '@electron-forge/maker-pkg') {
+        maker.config.name = 'deepnest-pkg-darwin'; // new: pkg name for darwin build in local dev
       }
     }
   }

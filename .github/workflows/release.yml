@@ -45,10 +45,10 @@ jobs:
           - os: "windows-latest"
             target: "mas"
           # Include only one target for each macOS build to avoid duplicates
-          - os: "macos-13"
-            target: ""
-          - os: "macos-latest"
-            target: ""
+          # - os: "macos-13"
+          #   target: ""
+          # - os: "macos-latest"
+          #   target: ""
       fail-fast: true # Explicitly failing fast because this is a publish. We want to bail the entire release if something went wrong with another build
 
     runs-on: ${{ matrix.os }}

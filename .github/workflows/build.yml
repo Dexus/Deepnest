@@ -151,7 +151,6 @@ jobs:
           mkdir -p out/make/
           if [[ "${{ matrix.target }}" == "mas" && ("${{ matrix.os }}" == "macos-13" || "${{ matrix.os }}" == "macos-latest") ]]; then
             yarn make --arch ${{ matrix.arch }}
-            find ./out -type f
             yarn make --arch ${{ matrix.arch }} --platform mas
           else
             yarn make --arch ${{ matrix.arch }}
