@@ -107,8 +107,8 @@ const config = {
       );
         // Execute yarn install with the specified arch in the build folder
         execSync(`rm -rf yarn.lock node_modules/`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-        execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-        execSync(`npm install --cpu ${arch} --os ${myPlatform}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:arch } });
+        //execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
+        execSync(`npm install --cpu ${arch} --os ${myPlatform}`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
       } catch (error) {
         console.error('Error during npm install:', error.message);
       }
