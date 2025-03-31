@@ -56,6 +56,27 @@ let includeFiles = [
 ];
 // Fix: Use startsWith instead of includes to match node_modules paths
 //console.log('Include files:', includeFiles.filter((f) => f.startsWith('node_modules')));
+
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+const readDirRecursive = (dir) => {
+  fs.readdir(dir, { withFileTypes: true }, (err, files) => {
+    if (err) {
+      console.error("Error reading directory:", err);
+    } else {
+      files.forEach((file) => {
+        const fullPath = path.join(dir, file.name);
+        if (file.isDirectory()) {
+          console.log("Directory:", fullPath);
+          readDirRecursive(fullPath);
+        } else {
+          console.log("File:", fullPath);
+        }
+      });
+    }
+  });
+};
+
 const config = {
   hooks: {
     packageAfterPrune: async (
@@ -67,10 +88,12 @@ const config = {
     ) => {
       try {
         // Execute yarn install with the specified arch in the build folder
+        execSync(`cat package.json`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64',YARN_ENABLE_IMMUTABLE_INSTALLS:false } });
         execSync(`yarn install --refresh-lockfile`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_target_arch:'arm64',YARN_ENABLE_IMMUTABLE_INSTALLS:false } });
       } catch (error) {
         console.error('Error during yarn install:', error.message);
       }
+      delay(5000);
 
       // Check each node_module for a gyp build and print native addon modules
       const nodeModulesPath = path.join(buildPath, 'node_modules');
@@ -85,24 +108,7 @@ const config = {
         platform,
         arch
       );
-      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-      const readDirRecursive = (dir) => {
-        fs.readdir(dir, { withFileTypes: true }, (err, files) => {
-          if (err) {
-            console.error("Error reading directory:", err);
-          } else {
-            files.forEach((file) => {
-              const fullPath = path.join(dir, file.name);
-              if (file.isDirectory()) {
-                console.log("Directory:", fullPath);
-                readDirRecursive(fullPath);
-              } else {
-                console.log("File:", fullPath);
-              }
-            });
-          }
-        });
-      };
+      
       const cwd = path.resolve(
         buildPath,
         "node_modules",
