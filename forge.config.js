@@ -227,6 +227,12 @@ const config = {
           rmSync(dir, { recursive: true, force: true })
         );
       }
+      try {
+        const cwd_electron = path.resolve(buildPath, "node_modules", "electron");
+        rmSync(cwd_electron, { recursive: true, force: true });
+      } catch (e) {
+        console.error("Error removing electron directory:", e);
+      }
       //await delay(2000);
       return void 0;
     },
