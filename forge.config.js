@@ -204,25 +204,22 @@ const config = {
         //console.log('includeFiles', includeFiles);
         //console.log('ignoreFiles', ignoreFiles);
         const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
-        const getAbi = (...args) => import("node-abi").then(({ default: nodeAbi }) => nodeAbi.getAbi(...args));
-        const abiVersion = getAbi(
-          packageJson.devDependencies.electron,
-          "electron"
-        );
+        const nodeAbi = await import("node-abi");
+        const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, "electron");
         prebuilds.forEach(function (fpath) {
-          if (!fpath.endsWith(".node")) return; // only process .node files
-          if (!fpath.includes("darwin")) return; // ignore if abiVersion doesn't match
-          if (!fpath.includes("abi" + abiVersion)) return; // ignore if abiVersion doesn't match
-          console.log(
-            "Renaming file:",
-            fpath,
-            "to",
-            path.join(path.dirname(fpath), "..", `${darwin}.node`)
-          );
-          renameSync(
-            fpath,
-            path.join(path.dirname(fpath), "..", `${darwin}.node`)
-          );
+            if (!fpath.endsWith(".node")) return;
+            if (!fpath.includes("darwin")) return;
+            if (!fpath.includes("abi" + abiVersion)) return;
+            console.log(
+              "Renaming file:",
+              fpath,
+              "to",
+              path.join(path.dirname(fpath), "..", `${darwin}.node`)
+            );
+            renameSync(
+              fpath,
+              path.join(path.dirname(fpath), "..", `${darwin}.node`)
+            );
         });
         const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
         prebuildDirs.forEach((dir) =>
