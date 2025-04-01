@@ -85,7 +85,7 @@ const config = {
       platform,
       arch
     ) => {
-      
+
       console.log(
         "packageAfterPrune",
         buildPath,
@@ -93,66 +93,67 @@ const config = {
         platform,
         arch
       );
-      try {
-        const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
-        
-      console.log(
-        "packageAfterPrune",
-        buildPath,
-        electronVersion,
-        platform,
-        myPlatform,
-        arch
-      );
-        // Execute yarn install with the specified arch in the build folder
-        execSync(`rm -rf yarn.lock node_modules/`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-        //execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-        execSync(`npm install --cpu ${arch} --os ${myPlatform} --arch=${arch} --platform=${myPlatform} --production`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env,npm_config_platform:myPlatform, npm_config_arch:arch } });
-      } catch (error) {
-        console.error('Error during npm install:', error.message);
-        execSync(`cat /Users/runner/.npm/_logs/*`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-      }
-      delay(5000);
-
-      // Check each node_module for a gyp build and print native addon modules
-      const nodeModulesPath = path.join(buildPath, 'node_modules');
-      const gypFiles = globSync(`${nodeModulesPath}/**/binding.gyp`);
-      gypFiles.forEach((gypFile) => {
-        console.log("Native addon detected in module:", path.dirname(gypFile));
-      });
-      
-      const cwd = path.resolve(
-        buildPath,
-        "node_modules",
-        "@deepnest",
-        "calculate-nfp"
-      );
-      const includeFiles = [
-        "rust-minkowski",
-        "bin",
-        "src",
-        "build",
-        "node_modules",
-      ];
-      //console.log('packageAfterPrune', cwd);
-
-      // Use for...of loop instead of forEach for async operations
-      for (const file of includeFiles) {
-        const filePath = path.join(cwd, file);
-        //console.log('includeFiles', filePath);
-        try {
-          rmSync(filePath, { recursive: true, force: true });
-        } catch (e) {}
-
-      }
-
-      const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
-      readDirRecursive(cwd2);
-      rmSync(path.join(cwd2, "bin"), { recursive: true, force: true });
-
-      console.log("platform", platform);
-      console.log("arch", arch);
       if (platform === "mas") {
+        try {
+          const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
+
+          console.log(
+            "packageAfterPrune",
+            buildPath,
+            electronVersion,
+            platform,
+            myPlatform,
+            arch
+          );
+          // Execute yarn install with the specified arch in the build folder
+          execSync(`rm -rf yarn.lock node_modules/`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
+          //execSync(`ls -alRs`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
+          execSync(`npm install --cpu ${arch} --os ${myPlatform} --arch=${arch} --platform=${myPlatform} --production`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_platform: myPlatform, npm_config_arch: arch } });
+        } catch (error) {
+          console.error('Error during npm install:', error.message);
+          execSync(`cat /Users/runner/.npm/_logs/*`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
+        }
+        delay(1000);
+
+        // Check each node_module for a gyp build and print native addon modules
+        const nodeModulesPath = path.join(buildPath, 'node_modules');
+        const gypFiles = globSync(`${nodeModulesPath}/**/binding.gyp`);
+        gypFiles.forEach((gypFile) => {
+          console.log("Native addon detected in module:", path.dirname(gypFile));
+        });
+
+        const cwd = path.resolve(
+          buildPath,
+          "node_modules",
+          "@deepnest",
+          "calculate-nfp"
+        );
+        const includeFiles = [
+          "rust-minkowski",
+          "bin",
+          "src",
+          "build",
+          "node_modules",
+        ];
+        //console.log('packageAfterPrune', cwd);
+
+        // Use for...of loop instead of forEach for async operations
+        for (const file of includeFiles) {
+          const filePath = path.join(cwd, file);
+          //console.log('includeFiles', filePath);
+          try {
+            rmSync(filePath, { recursive: true, force: true });
+          } catch (e) { }
+
+        }
+
+        const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
+        readDirRecursive(cwd2);
+        rmSync(path.join(cwd2, "bin"), { recursive: true, force: true });
+
+        console.log("platform", platform);
+        console.log("arch", arch);
+
         try {
           const cwd3 = path.resolve(
             buildPath,
@@ -207,19 +208,19 @@ const config = {
         const nodeAbi = await import("node-abi");
         const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, "electron");
         prebuilds.forEach(function (fpath) {
-            if (!fpath.endsWith(".node")) return;
-            if (!fpath.includes("darwin")) return;
-            if (!fpath.includes("abi" + abiVersion)) return;
-            console.log(
-              "Renaming file:",
-              fpath,
-              "to",
-              path.join(path.dirname(fpath), "..", `${darwin}.node`)
-            );
-            renameSync(
-              fpath,
-              path.join(path.dirname(fpath), "..", `${darwin}.node`)
-            );
+          if (!fpath.endsWith(".node")) return;
+          if (!fpath.includes("darwin")) return;
+          if (!fpath.includes("abi" + abiVersion)) return;
+          console.log(
+            "Renaming file:",
+            fpath,
+            "to",
+            path.join(path.dirname(fpath), "..", `${darwin}.node`)
+          );
+          renameSync(
+            fpath,
+            path.join(path.dirname(fpath), "..", `${darwin}.node`)
+          );
         });
         const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
         prebuildDirs.forEach((dir) =>
