@@ -3,7 +3,6 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 const { rmSync, renameSync } = require("fs");
 const { execSync } = require('child_process');
 const { globSync } = require("glob");
-const nodeAbi = require("node-abi");
 const path = require("path");
 
 // Get the package version from package.json
@@ -205,7 +204,8 @@ const config = {
         //console.log('includeFiles', includeFiles);
         //console.log('ignoreFiles', ignoreFiles);
         const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
-        const abiVersion = nodeAbi.getAbi(
+        const getAbi = (...args) => import("node-abi").then(({ default: nodeAbi }) => nodeAbi.getAbi(...args));
+        const abiVersion = getAbi(
           packageJson.devDependencies.electron,
           "electron"
         );
