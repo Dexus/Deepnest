@@ -254,7 +254,7 @@ const config = {
 
         if (isEmpty) {
           console.log("Deleting empty folder:", dir);
-          rmSync(dir,{ recursive: true, force: true });
+          rmSync(dir, { recursive: true, force: true });
         }
       };
 
@@ -438,6 +438,9 @@ const config = {
         s3ForcePathStyle: true,
         public: true,
         folder: 'deepnest-next',
+        // refs: https://github.com/lobehub/lobe-chat/pull/5479
+        requestChecksumCalculation: 'WHEN_REQUIRED',
+        responseChecksumValidation: 'WHEN_REQUIRED',
       }
     },
   ],
