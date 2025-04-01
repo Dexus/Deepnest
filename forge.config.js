@@ -130,10 +130,9 @@ const config = {
         );
         const includeFiles = [
           "rust-minkowski",
-          "bin",
-          "src",
           "build",
           "node_modules",
+          "prebuilds",
         ];
         //console.log('packageAfterPrune', cwd);
 
