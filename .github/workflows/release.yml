@@ -171,6 +171,11 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
           MAKER_ARCH: ${{ matrix.arch }}
           MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_ACCESS_KEY_ID: ${{ secrets.S3_KEY }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET }}
+          S3_ENDPOINT: ${{ secrets.S3_HOST }}
         run: |
           if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
             npm run publish:fromdry -- --arch ${{ matrix.arch }}

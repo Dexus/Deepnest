@@ -427,15 +427,19 @@ const config = {
         release: '[latest/edge, insider/stable]'
       }
     },*/
-    /*
     {
       name: '@electron-forge/publisher-s3',
       config: {
-        bucket: 'my-bucket',
-        public: true
+        bucket: process.env.S3_BUCKET || 'deepnest-next',
+        region: process.env.S3_REGION || 'eu-central-1',
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        endpoint: process.env.S3_ENDPOINT || 'https://s3.eu-central-1.amazonaws.com',
+        s3ForcePathStyle: true,
+        public: true,
+        folder: 'deepnest-next',
       }
     },
-    */
   ],
   plugins: [
     {
