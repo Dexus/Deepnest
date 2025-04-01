@@ -1,13 +1,13 @@
 const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 const { rmSync, renameSync } = require("fs");
+const fs = require("fs");
 const { execSync } = require('child_process');
 const { globSync } = require("glob");
 const path = require("path");
 
 // Get the package version from package.json
 const packageJson = require("./package.json");
-const fs = require("fs");
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
@@ -227,12 +227,41 @@ const config = {
           rmSync(dir, { recursive: true, force: true })
         );
       }
+
+      // remove electron directory from node_modules don't need it for release
       try {
         const cwd_electron = path.resolve(buildPath, "node_modules", "electron");
         rmSync(cwd_electron, { recursive: true, force: true });
       } catch (e) {
         console.error("Error removing electron directory:", e);
       }
+      await delay(1000);
+      // Function to recursively delete empty node_modules folders
+      const deleteEmptyNodeModules = (dir) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        let isEmpty = true;
+
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            deleteEmptyNodeModules(fullPath);
+            if (fs.existsSync(fullPath) && fs.readdirSync(fullPath).length > 0) {
+              isEmpty = false;
+            }
+          } else {
+            isEmpty = false;
+          }
+        }
+
+        if (isEmpty) {
+          console.log("Deleting empty folder:", dir);
+          rmSync(dir,{ recursive: true, force: true });
+        }
+      };
+
+      // Start checking for empty node_modules folders
+      deleteEmptyNodeModules(path.join(buildPath, "node_modules"));
+
       //await delay(2000);
       return void 0;
     },
