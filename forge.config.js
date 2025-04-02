@@ -11,7 +11,7 @@ const packageJson = require("./package.json");
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
-let makerArch = process.env.MAKER_ARCH || process.platform=="win32"?"x64":"arm64";
+let makerArch = process.env.MAKER_ARCH || process.platform == "win32" ? "x64" : "arm64";
 let makerPlatform = process.env.MAKER_PLATFORM || "darwin";
 console.log("Maker Arch:", makerArch);
 console.log("Maker Platform:", makerPlatform);
@@ -113,7 +113,9 @@ const packageAfterPruneHook = async (
     platform,
     arch
   );
-  
+
+  return void 0;//temporary return to avoid errors
+
   if (platform === "mas") {
     try {
       const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
@@ -250,10 +252,10 @@ const packageAfterPruneHook = async (
     console.error("Error removing electron directory:", e);
   }
   await delay(1000);
-  
+
   // Start checking for empty node_modules folders
   deleteEmptyNodeModules(path.join(buildPath, "node_modules"));
-  
+
   return void 0;
 };
 
@@ -280,162 +282,43 @@ const getPackagerConfig = () => {
 
 // Configure macOS signing options based on target and environment
 const getMacSigningConfig = () => {
-  const isCI = process.env.CI;
   const isMas = makerPlatform === "mas";
-  
+
   // Base signing configuration common to all macOS builds
   const baseSignConfig = {
-    hardenedRuntime: true,
-    gatekeeperAssess: false,
+    osxSign: {
+      hardenedRuntime: isMas ? false : true,
+      gatekeeperAssess: false,
+      identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
+      entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
+      entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
+      signatureFlags: "library",
+    }
   };
-  
-  // For CI environments
-  if (isCI) {
-    if (isMas) {
-      // MAS (Mac App Store) build in CI environment
-      if (process.env.APPLE_MAS_IDENTITY) {
-        baseSignConfig.identity = process.env.APPLE_MAS_IDENTITY;
-      }
-      
-      return {
-        osxSign: {
-          ...baseSignConfig,
-          entitlements: path.join(__dirname, "_assets", "entitlements.mas.plist"),
-          entitlementsInherit: path.join(__dirname, "_assets", "entitlements.mas.inherit.plist"),
-          signatureFlags: "library",
-        }
-      };
-    } else {
-      // Regular macOS build in CI environment
-      if (process.env.APPLE_DEVELOPER_ID_APPLICATION) {
-        baseSignConfig.identity = process.env.APPLE_DEVELOPER_ID_APPLICATION;
-      }
-      
-      const signingConfig = {
-        osxSign: {
-          ...baseSignConfig,
-          entitlements: path.join(__dirname, "_assets", "entitlements.plist"),
-          entitlementsInherit: path.join(__dirname, "_assets", "entitlements.inherit.plist"),
-        }
-      };
-      
-      // Add notarization if all required environment variables exist
-      if (
-        process.env.APPLE_API_KEY_ID &&
-        process.env.APPLE_API_ISSUER &&
-        process.env.NOTARIZATION_KEY_PATH
-      ) {
-        signingConfig.osxNotarize = {
-          tool: "notarytool",
-          appleApiKey: process.env.NOTARIZATION_KEY_PATH,
-          appleApiKeyId: process.env.APPLE_API_KEY_ID,
-          appleApiIssuer: process.env.APPLE_API_ISSUER,
-        };
-      }
-      
-      return signingConfig;
-    }
-  } else if (process.platform === "darwin") {
-    // Local development on macOS
-    const localSigningConfig = {
-      osxSign: {
-        ...baseSignConfig,
-      }
+
+  // Add notarization if all required environment variables exist
+  if (
+    process.env.APPLE_API_KEY_ID &&
+    process.env.APPLE_API_ISSUER &&
+    process.env.NOTARIZATION_KEY_PATH
+  ) {
+    signingConfig.osxNotarize = {
+      tool: "notarytool",
+      appleApiKey: process.env.NOTARIZATION_KEY_PATH,
+      appleApiKeyId: process.env.APPLE_API_KEY_ID,
+      appleApiIssuer: process.env.APPLE_API_ISSUER,
     };
-    
-    // Only add keychain if the environment variable is set
-    if (process.env.APPLE_KEYCHAIN_PATH) {
-      localSigningConfig.osxSign.keychain = process.env.APPLE_KEYCHAIN_PATH;
-    }
-    
-    // Only add identity if explicitly set in environment variables for local builds
-    if (isMas && process.env.APPLE_MAS_IDENTITY) {
-      localSigningConfig.osxSign.identity = process.env.APPLE_MAS_IDENTITY;
-    } else if (!isMas && process.env.APPLE_DEVELOPER_ID_APPLICATION) {
-      localSigningConfig.osxSign.identity = process.env.APPLE_DEVELOPER_ID_APPLICATION;
-    }
-    
-    if (isMas) {
-      localSigningConfig.osxSign.entitlements = path.join(__dirname, "_assets", "entitlements.mas.plist");
-      localSigningConfig.osxSign.entitlementsInherit = path.join(__dirname, "_assets", "entitlements.mas.inherit.plist");
-      localSigningConfig.osxSign.signatureFlags = "library";
-    } else {
-      localSigningConfig.osxSign.entitlements = path.join(__dirname, "_assets", "entitlements.plist");
-      localSigningConfig.osxSign.entitlementsInherit = path.join(__dirname, "_assets", "entitlements.inherit.plist");
-    }
-    
-    return localSigningConfig;
   }
-  
-  return {};
-};
 
-// Configure maker-pkg settings based on platform and environment
-const configurePkgMaker = (makers) => {
-  const isCI = process.env.CI;
-  const isMas = makerPlatform === "mas";
-  
-  for (const maker of makers) {
-    if (maker.name === "@electron-forge/maker-pkg") {
-      // Common configurations
-      maker.config.platform = isMas ? "mas" : "darwin";
-      maker.config.name = `deepnest-${packageVersion}-${makerArch}-${isMas ? "mas" : "darwin"}`;
-
-      if (isCI) {
-        // CI environment specific configurations
-        if (isMas && process.env.APPLE_MAS_INSTALLER_IDENTITY) {
-          maker.config.identity = process.env.APPLE_MAS_INSTALLER_IDENTITY;
-        } else if (!isMas && process.env.APPLE_DEVELOPER_ID_INSTALLER) {
-          maker.config.identity = process.env.APPLE_DEVELOPER_ID_INSTALLER;
-        }
-        
-        if (process.env.APPLE_KEYCHAIN_PATH) {
-          maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
-        }
-        
-        if (isMas) {
-          maker.config.provisioningProfile = path.join(
-            __dirname,
-            "_assets",
-            "embedded.provisionprofile"
-          );
-        }
-      } else if (process.platform === "darwin") {
-        // Local development - only add keychain and identity if environment variables are set
-        if (process.env.APPLE_KEYCHAIN_PATH) {
-          maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
-        }
-        
-        // Only add identity if explicitly set for local builds
-        if (isMas && process.env.APPLE_MAS_INSTALLER_IDENTITY) {
-          maker.config.identity = process.env.APPLE_MAS_INSTALLER_IDENTITY;
-        } else if (!isMas && process.env.APPLE_DEVELOPER_ID_INSTALLER) {
-          maker.config.identity = process.env.APPLE_DEVELOPER_ID_INSTALLER;
-        }
-        
-        // Add provisioning profile for MAS builds if the file exists
-        if (isMas) {
-          const profilePath = path.join(__dirname, "_assets", "embedded.provisionprofile");
-          try {
-            if (fs.existsSync(profilePath)) {
-              maker.config.provisioningProfile = profilePath;
-            }
-          } catch (e) {
-            console.warn("Provisioning profile not found for local MAS build");
-          }
-        }
-      }
-    }
-  }
-  
-  return makers;
-};
+  return signingConfig;
+}
 
 // Define base makers configuration
 const getMakers = () => {
   const makers = [
     {
       name: "@reforged/maker-appimage",
+      platforms: ["linux"],
       config: {
         options: {
           categories: ["Graphics", "Utility", "VectorGraphics", "2DGraphics", "ImageProcessing"],
@@ -445,6 +328,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-squirrel",
+      platforms: ["win32"],
       config: {
         name: `deepnest-${makerArch}`,
         setupExe: `deepnest-v${packageVersion}-${makerArch}-setup.exe`,
@@ -487,8 +371,10 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-pkg",
-      platforms: ["darwin", "mas"],
-      config: {},
+      platforms: ["mas"],
+      config: {
+        identity: process.env.APPLE_MAS_INSTALLER_IDENTITY,
+      },
     },
     {
       name: "@electron-forge/maker-flatpak",
@@ -508,6 +394,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-deb",
+      platforms: ["linux"],
       config: {
         options: {
           maintainer: "Josef Fröhle",
@@ -519,6 +406,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-rpm",
+      platforms: ["linux"],
       config: {
         options: {
           homepage: "https://www.deepnest.net",
@@ -528,7 +416,7 @@ const getMakers = () => {
     },
   ];
 
-  return configurePkgMaker(makers);
+  return makers;
 };
 
 // Define publishers configuration
@@ -586,8 +474,6 @@ const buildConfig = () => {
       // at package time, before code signing the application
       new FusesPlugin({
         version: FuseVersion.V1,
-        resetAdHocDarwinSignature:
-          makerPlatform === "darwin" && makerArch == "arm64",
         [FuseV1Options.RunAsNode]: true,
         [FuseV1Options.EnableCookieEncryption]: true,
         [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
@@ -599,7 +485,7 @@ const buildConfig = () => {
   };
 
   // Add macOS signing configuration if applicable
-  if (process.platform === "darwin" || makerPlatform === "darwin" || makerPlatform === "mas") {
+  if ((makerPlatform === "darwin" || makerPlatform === "mas") && process.platform === "darwin") {
     const signingConfig = getMacSigningConfig();
     config.packagerConfig = {
       ...config.packagerConfig,
