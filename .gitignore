@@ -19,3 +19,7 @@ node_modules/
 /playwright/.cache/
 
 /out
+/.env
+/.env.local
+/output.log
+/_assets/embedded.*
