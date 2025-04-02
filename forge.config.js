@@ -302,7 +302,7 @@ const getMacSigningConfig = () => {
     process.env.APPLE_API_ISSUER &&
     process.env.NOTARIZATION_KEY_PATH
   ) {
-    signingConfig.osxNotarize = {
+    baseSignConfig.osxNotarize = {
       tool: "notarytool",
       appleApiKey: process.env.NOTARIZATION_KEY_PATH,
       appleApiKeyId: process.env.APPLE_API_KEY_ID,
@@ -310,7 +310,7 @@ const getMacSigningConfig = () => {
     };
   }
 
-  return signingConfig;
+  return baseSignConfig;
 }
 
 // Define base makers configuration
