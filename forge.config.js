@@ -114,8 +114,6 @@ const packageAfterPruneHook = async (
     arch
   );
 
-  return void 0;//temporary return to avoid errors
-
   if (platform === "mas") {
     try {
       const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
