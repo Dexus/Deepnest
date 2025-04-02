@@ -340,9 +340,20 @@ const getMacSigningConfig = () => {
     const localSigningConfig = {
       osxSign: {
         ...baseSignConfig,
-        keychain: process.env.APPLE_KEYCHAIN_PATH,
       }
     };
+    
+    // Only add keychain if the environment variable is set
+    if (process.env.APPLE_KEYCHAIN_PATH) {
+      localSigningConfig.osxSign.keychain = process.env.APPLE_KEYCHAIN_PATH;
+    }
+    
+    // Only add identity if explicitly set in environment variables for local builds
+    if (isMas && process.env.APPLE_MAS_IDENTITY) {
+      localSigningConfig.osxSign.identity = process.env.APPLE_MAS_IDENTITY;
+    } else if (!isMas && process.env.APPLE_DEVELOPER_ID_APPLICATION) {
+      localSigningConfig.osxSign.identity = process.env.APPLE_DEVELOPER_ID_APPLICATION;
+    }
     
     if (isMas) {
       localSigningConfig.osxSign.entitlements = path.join(__dirname, "_assets", "entitlements.mas.plist");
@@ -389,15 +400,29 @@ const configurePkgMaker = (makers) => {
             "embedded.provisionprofile"
           );
         }
-      } else if (process.platform === "darwin" && isMas) {
-        // Local development for MAS builds
-        const profilePath = path.join(__dirname, "_assets", "embedded.provisionprofile");
-        try {
-          if (fs.existsSync(profilePath)) {
-            maker.config.provisioningProfile = profilePath;
+      } else if (process.platform === "darwin") {
+        // Local development - only add keychain and identity if environment variables are set
+        if (process.env.APPLE_KEYCHAIN_PATH) {
+          maker.config.keychain = process.env.APPLE_KEYCHAIN_PATH;
+        }
+        
+        // Only add identity if explicitly set for local builds
+        if (isMas && process.env.APPLE_MAS_INSTALLER_IDENTITY) {
+          maker.config.identity = process.env.APPLE_MAS_INSTALLER_IDENTITY;
+        } else if (!isMas && process.env.APPLE_DEVELOPER_ID_INSTALLER) {
+          maker.config.identity = process.env.APPLE_DEVELOPER_ID_INSTALLER;
+        }
+        
+        // Add provisioning profile for MAS builds if the file exists
+        if (isMas) {
+          const profilePath = path.join(__dirname, "_assets", "embedded.provisionprofile");
+          try {
+            if (fs.existsSync(profilePath)) {
+              maker.config.provisioningProfile = profilePath;
+            }
+          } catch (e) {
+            console.warn("Provisioning profile not found for local MAS build");
           }
-        } catch (e) {
-          console.warn("Provisioning profile not found for local MAS build");
         }
       }
     }
