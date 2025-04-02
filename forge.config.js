@@ -287,12 +287,22 @@ const getMacSigningConfig = () => {
   // Base signing configuration common to all macOS builds
   const baseSignConfig = {
     osxSign: {
-      hardenedRuntime: isMas ? false : true,
-      gatekeeperAssess: false,
+      hardenedRuntime: isMas ? false : true, // Hardened runtime is not needed for MAS
+      gatekeeperAssess: isMas ? false : true, // Gatekeeper assessment is not needed for MAS
       identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
       entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
       signatureFlags: "library",
+      optionsForFile: (filePath) => {
+        // Here, we keep it simple and return a single entitlements.plist file.
+        // You can use this callback to map different sets of entitlements
+        // to specific files in your packaged app.
+        return {
+          entitlements: 'path/to/entitlements.plist',
+          signatureFlags: "library",
+          hardenedRuntime: isMas ? false : true,
+        };
+      }
     }
   };
 
@@ -346,7 +356,7 @@ const getMakers = () => {
       name: "@electron-forge/maker-dmg",
       platforms: ["darwin"],
       config: {
-        name: `deepnest-${makerPlatform=='darwin'?'mac':'mas'}-${makerArch}`,
+        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
         background: path.resolve(__dirname, "_assets", "dmg-background.png"),
         icon: path.join(__dirname, "_assets", "icon.icns"),
         format: "ULFO",
