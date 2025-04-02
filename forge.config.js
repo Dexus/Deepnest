@@ -346,7 +346,7 @@ const getMakers = () => {
       name: "@electron-forge/maker-dmg",
       platforms: ["darwin"],
       config: {
-        name: `deepnest-${packageVersion}-${makerPlatform}-${makerArch}`,
+        name: `deepnest-${makerPlatform=='darwin'?'mac':'mas'}-${makerArch}`,
         background: path.resolve(__dirname, "_assets", "dmg-background.png"),
         icon: path.join(__dirname, "_assets", "icon.icns"),
         format: "ULFO",
@@ -371,7 +371,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-pkg",
-      platforms: ["mas"],
+      platforms: ["darwin", "mas"],
       config: {
         identity: process.env.APPLE_MAS_INSTALLER_IDENTITY,
       },
