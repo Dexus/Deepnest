@@ -126,7 +126,7 @@ jobs:
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
 
       - name: Publish Dry (${{ matrix.arch }})
-        shell: bash
+        uses: nick-fields/retry@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
@@ -141,19 +141,23 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
           MAKER_ARCH: ${{ matrix.arch }}
           MAKER_PLATFORM: ${{ matrix.target == 'mas' && 'mas' || '' }}
-        run: |
-          if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
-            npm run publish:dry -- --arch ${{ matrix.arch }}
-          fi
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            npm run publish:dry -- --arch ${{ matrix.arch }}
-          fi
-          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
-            npm run publish:dry -- --arch ${{ matrix.arch }}
-          fi
-          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
-            npm run publish:dry -- --arch universal --platform mas
-          fi
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            if [[ ("${{ matrix.os }}" == "ubuntu-24.04" && "${{ matrix.arch }}" == "x64") || ("${{ matrix.os }}" == "ubuntu-24.04-arm" && "${{ matrix.arch }}" == "arm64") ]]; then
+              npm run publish:dry -- --arch ${{ matrix.arch }}
+            fi
+            if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+              npm run publish:dry -- --arch ${{ matrix.arch }}
+            fi
+            if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
+              npm run publish:dry -- --arch ${{ matrix.arch }}
+            fi
+            if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
+              npm run publish:dry -- --arch universal --platform mas
+            fi
 
       - name: Publish From Dry (${{ matrix.arch }})
         shell: bash
