@@ -280,7 +280,6 @@ const getPackagerConfig = () => {
     appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net", 
     appVersion: `${packageVersion}`,
     buildVersion: `${packageVersion}.${process.env.GITHUB_RUN_ID}`,
-
     executableName: "deepnest",
     icon: path.resolve(__dirname, "_assets", "icon"),
     asar: true,
@@ -291,6 +290,9 @@ const getPackagerConfig = () => {
       return !includeFiles.includes(path.normalize(p.replace("/", "")));
     },
     prune: true,
+    extendInfo: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   };
 
   return basePackagerConfig;
