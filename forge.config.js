@@ -332,7 +332,7 @@ const getMacSigningConfig = () => {
   };
 
   // Add notarization if all required environment variables exist
-  if ( !isMas &&
+  if (!isMas &&
     process.env.APPLE_API_KEY_ID &&
     process.env.APPLE_API_ISSUER &&
     process.env.NOTARIZATION_KEY_PATH
@@ -379,7 +379,7 @@ const getMakers = () => {
         //macUpdateManifestBaseUrl: `https://dl.deepnest.app/deepnest-next/darwin/${arch}`
       }),
     },
-    {
+    !isMas && {
       name: "@electron-forge/maker-dmg",
       platforms: ["darwin"],
       config: {
