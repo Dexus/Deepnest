@@ -289,7 +289,7 @@ const getMacSigningConfig = () => {
       type: isMas ? "distribution" : "development",
       hardenedRuntime: isMas ? false : true, // Hardened runtime is not needed for MAS
       gatekeeperAssess: isMas ? false : true, // Gatekeeper assessment is not needed for MAS
-      identity: isMas ? process.env.APPLE_DEVELOPER_ID_APPLICATION : process.env.APPLE_DEVELOPER_ID_APPLICATION,
+      identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
       entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
       optionsForFile: (filePath) => {
