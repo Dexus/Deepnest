@@ -290,7 +290,6 @@ const getMacSigningConfig = () => {
       identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
       entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
-      signatureFlags: "library",
       optionsForFile: (filePath) => {
         if (filePath.endsWith('deepnest.app')) {
           return {
