@@ -26,5 +26,7 @@
     <array>
       <string>$(AppIdentifierPrefix).net.deepnest.app</string>
     </array>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
   </dict>
 </plist>
