@@ -407,7 +407,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-pkg",
-      platforms: ["darwin", "mas"],
+      platforms: ["mas"],
       config: {
         identity: process.env.APPLE_MAS_INSTALLER_IDENTITY,
       },
