@@ -382,42 +382,6 @@ const getMakers = () => {
         //macUpdateManifestBaseUrl: `https://dl.deepnest.app/deepnest-next/darwin/${arch}`
       }),
     },
-    !isMas && {
-      name: "@electron-forge/maker-dmg",
-      platforms: ["darwin"],
-      config: {
-        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
-        background: path.resolve(__dirname, "_assets", "dmg-background.png"),
-        icon: path.join(__dirname, "_assets", "icon.icns"),
-        format: "ULFO",
-        contents: () => [
-          {
-            x: 150,
-            y: 180,
-            type: "file",
-            path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
-          },
-          { x: 350, y: 180, type: "link", path: "/Applications" },
-        ],
-        additionalDMGOptions: {
-          window: {
-            size: {
-              width: 500,
-              height: 345,
-            },
-          },
-        },
-      },
-    },
-    {
-      name: "@electron-forge/maker-pkg",
-      platforms: ["mas"],
-      config: {
-        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
-        identity: isMas ? process.env.APPLE_MAS_INSTALLER_IDENTITY : process.env.APPLE_INSTALLER_IDENTITY,
-        appBundleId: "net.deepnest.app",
-      },
-    },
     {
       name: "@electron-forge/maker-flatpak",
       config: {
@@ -457,6 +421,47 @@ const getMakers = () => {
       },
     },
   ];
+
+  if (!isMas && process.platform === "darwin") {
+    makers.push({
+      name: "@electron-forge/maker-dmg",
+      platforms: ["darwin"],
+      config: {
+        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
+        background: path.resolve(__dirname, "_assets", "dmg-background.png"),
+        icon: path.join(__dirname, "_assets", "icon.icns"),
+        format: "ULFO",
+        contents: () => [
+          {
+            x: 150,
+            y: 180,
+            type: "file",
+            path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
+          },
+          { x: 350, y: 180, type: "link", path: "/Applications" },
+        ],
+        additionalDMGOptions: {
+          window: {
+            size: {
+              width: 500,
+              height: 345,
+            },
+          },
+        },
+      },
+    });
+  }
+  if (makerPlatform === "mas") {
+    makers.push({
+      name: "@electron-forge/maker-pkg",
+      platforms: ["mas"],
+      config: {
+        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
+        identity: isMas ? process.env.APPLE_MAS_INSTALLER_IDENTITY : process.env.APPLE_INSTALLER_IDENTITY,
+        appBundleId: "net.deepnest.app",
+      },
+    });
+  }
 
   return makers;
 };
