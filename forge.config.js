@@ -293,7 +293,7 @@ const getMacSigningConfig = () => {
       entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
       preAutoEntitlements: false,
-      preEmbedProvisioningProfile: true,
+      preEmbedProvisioningProfile: isMas ? true : false,
       signatureFlags: "library",
       provisioningProfile: path.join(__dirname, "_assets", 'embedded.provisionprofile'),
       optionsForFile: (filePath) => {
