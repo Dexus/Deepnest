@@ -294,6 +294,7 @@ const getMacSigningConfig = () => {
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
       preAutoEntitlements: false,
       preEmbedProvisioningProfile: true,
+      signatureFlags: "library",
       provisioningProfile: path.join(__dirname, "_assets", 'embedded.provisionprofile'),
       optionsForFile: (filePath) => {
         if (filePath.endsWith('deepnest.app')) {
