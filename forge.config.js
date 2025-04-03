@@ -316,6 +316,11 @@ const getMacSigningConfig = () => {
         "_assets",
         `entitlements${isMas ? ".mas" : ""}.inherit.plist`
       ),
+      entitlementsLoginHelper: path.join(
+        __dirname,
+        "_assets",
+        `entitlements${isMas ? ".mas" : ""}.loginhelper.plist`
+      ),
       preAutoEntitlements: false,
       preEmbedProvisioningProfile: isMas ? true : false,
       signatureFlags: "library",
