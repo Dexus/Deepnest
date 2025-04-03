@@ -277,7 +277,10 @@ const getPackagerConfig = () => {
   const basePackagerConfig = {
     appCategoryType: "public.app-category.productivity",
     appBundleId: "net.deepnest.app",
-    appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net",
+    appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net", 
+    appVersion: `${packageVersion}`,
+    buildVersion: `${packageVersion}.${process.env.GITHUB_RUN_ID}`,
+
     executableName: "deepnest",
     icon: path.resolve(__dirname, "_assets", "icon"),
     asar: true,
@@ -634,7 +637,6 @@ const buildConfig = () => {
     },
     makers: getMakers(),
     publishers: getPublishers(),
-    version: `${packageVersion}.${process.env.GITHUB_RUN_ID}`,
     plugins: [
       {
         name: "@electron-forge/plugin-auto-unpack-natives",
