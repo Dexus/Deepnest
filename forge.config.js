@@ -10,6 +10,8 @@ const path = require("path");
 const packageJson = require("./package.json");
 const { type, version } = require("os");
 const packageVersion = packageJson.version;
+// Extract major.minor version without patch
+const shortVersion = packageVersion.replace(/\.\d+$/, '');
 
 // Extract platform and arch from command line arguments
 let makerArch =
@@ -279,7 +281,7 @@ const getPackagerConfig = () => {
     appBundleId: "net.deepnest.app",
     appCopyright: "Copyright © 2025 Josef Fröhle - www.deepnest.net", 
     appVersion: `${packageVersion}`,
-    buildVersion: `${packageVersion}.${process.env.GITHUB_RUN_ID}`,
+    buildVersion: `${shortVersion}.${process.env.GITHUB_RUN_ID}`,
     executableName: "deepnest",
     icon: path.resolve(__dirname, "_assets", "icon"),
     asar: true,
@@ -292,6 +294,7 @@ const getPackagerConfig = () => {
     prune: true,
     extendInfo: {
       ITSAppUsesNonExemptEncryption: false,
+      LSMultipleInstancesProhibited: true,
     },
   };
 
