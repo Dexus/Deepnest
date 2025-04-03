@@ -351,6 +351,7 @@ const getMacSigningConfig = () => {
 
 // Define base makers configuration
 const getMakers = () => {
+  const isMas = makerPlatform === "mas";
   const makers = [
     {
       name: "@reforged/maker-appimage",
