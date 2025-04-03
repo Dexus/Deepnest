@@ -291,7 +291,18 @@ const getMacSigningConfig = () => {
       entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
       signatureFlags: "library",
-      optionsForFile: (filePath) => {
+      optionsForFile: (file) => {
+        const index = file.replace('deepnest.app', '').indexOf('.app');
+        const inherit = index !== -1;
+        if (inherit) {
+          console.log(file);
+        }
+
+        return {
+          entitlements: inherit
+            ? 'build/entitlements.mas.inherit.plist'
+            : 'build/entitlements.mas.plist',
+        };
         // Here, we keep it simple and return a single entitlements.plist file.
         // You can use this callback to map different sets of entitlements
         // to specific files in your packaged app.
