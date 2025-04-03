@@ -12,7 +12,9 @@
     <true/>
     <key>com.apple.security.files.downloads.read-write</key>
     <true/>
-    <key>com.apple.security.files.documents.read-write</key>
+    <key>com.apple.security.assets.pictures.read-write</key>
+    <true/>
+    <key>com.apple.security.device.usb</key>
     <true/>
     <key>com.apple.security.network.client</key>
     <true/>
