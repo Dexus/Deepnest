@@ -20,8 +20,6 @@
     <true/>
     <key>com.apple.application-identifier</key>
     <string>$(AppIdentifierPrefix).net.deepnest.app</string>
-    <key>com.apple.developer.team-idenifier</key>
-    <string>$(AppIdentifierPrefix)</string>
     <key>com.apple.security.application-groups</key>
     <array>
       <string>$(AppIdentifierPrefix).net.deepnest.app</string>
