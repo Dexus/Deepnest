@@ -8,6 +8,7 @@ const path = require("path");
 
 // Get the package version from package.json
 const packageJson = require("./package.json");
+const { type } = require("os");
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
@@ -285,6 +286,7 @@ const getMacSigningConfig = () => {
   // Base signing configuration common to all macOS builds
   const baseSignConfig = {
     osxSign: {
+      type: "distribution",
       hardenedRuntime: isMas ? false : true, // Hardened runtime is not needed for MAS
       gatekeeperAssess: isMas ? false : true, // Gatekeeper assessment is not needed for MAS
       identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
