@@ -333,6 +333,11 @@ const getMacSigningConfig = () => {
               `entitlements${isMas ? ".mas" : ""}.plist`
             ),
             hardenedRuntime: isMas ? false : true,
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
           };
         }
         if (filePath.endsWith("deepnest Helper (GPU).app")) {
@@ -343,6 +348,11 @@ const getMacSigningConfig = () => {
               `entitlements${isMas ? ".mas" : ""}.gpu.plist`
             ),
             hardenedRuntime: isMas ? false : true,
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
           };
         }
         if (filePath.endsWith("deepnest Helper (Plugin).app")) {
@@ -353,6 +363,11 @@ const getMacSigningConfig = () => {
               `entitlements${isMas ? ".mas" : ""}.plugin.plist`
             ),
             hardenedRuntime: isMas ? false : true,
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
           };
         }
         if (filePath.endsWith("deepnest Helper (Renderer).app")) {
@@ -363,6 +378,11 @@ const getMacSigningConfig = () => {
               `entitlements${isMas ? ".mas" : ""}.renderer.plist`
             ),
             hardenedRuntime: isMas ? false : true,
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
           };
         }
         if (filePath.endsWith("deepnest Helper.app")) {
@@ -373,6 +393,11 @@ const getMacSigningConfig = () => {
               `entitlements${isMas ? ".mas" : ""}.renderer.plist`
             ),
             hardenedRuntime: isMas ? false : true,
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
           };
         }
         return {
@@ -382,6 +407,11 @@ const getMacSigningConfig = () => {
             `entitlements${isMas ? ".mas" : ""}.plist`
           ),
           hardenedRuntime: isMas ? false : true,
+          provisioningProfile: path.join(
+            __dirname,
+            "_assets",
+            "embedded.provisionprofile"
+          ),
         };
       },
     },
