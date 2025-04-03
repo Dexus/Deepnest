@@ -408,7 +408,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-pkg",
-      platforms: ["darwin", "mas"],
+      platforms: ["mas"],
       config: {
         name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
         identity: isMas ? process.env.APPLE_MAS_INSTALLER_IDENTITY : process.env.APPLE_INSTALLER_IDENTITY,
