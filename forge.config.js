@@ -286,7 +286,7 @@ const getMacSigningConfig = () => {
   // Base signing configuration common to all macOS builds
   const baseSignConfig = {
     osxSign: {
-      type: isMas ? "distribution" : "development",
+      type: isMas ? "distribution" : "distribution", //"development",
       hardenedRuntime: isMas ? false : true, // Hardened runtime is not needed for MAS
       gatekeeperAssess: isMas ? false : true, // Gatekeeper assessment is not needed for MAS
       identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
@@ -537,8 +537,4 @@ const buildConfig = () => {
 
 // Generate the final configuration
 const config = buildConfig();
-
-console.log("Final config:", config);
-console.log("Final config packagerConfig:", config.packagerConfig);
-console.log("Final config makers:", config.makers);
 module.exports = config;
