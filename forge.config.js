@@ -2,7 +2,7 @@ const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 const { rmSync, renameSync } = require("fs");
 const fs = require("fs");
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 const { globSync } = require("glob");
 const path = require("path");
 
@@ -12,7 +12,8 @@ const { type } = require("os");
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
-let makerArch = process.env.MAKER_ARCH || process.platform == "win32" ? "x64" : "arm64";
+let makerArch =
+  process.env.MAKER_ARCH || process.platform == "win32" ? "x64" : "arm64";
 let makerPlatform = process.env.MAKER_PLATFORM || "darwin";
 console.log("Maker Arch:", makerArch);
 console.log("Maker Platform:", makerPlatform);
@@ -107,17 +108,11 @@ const packageAfterPruneHook = async (
   platform,
   arch
 ) => {
-  console.log(
-    "packageAfterPrune",
-    buildPath,
-    electronVersion,
-    platform,
-    arch
-  );
+  console.log("packageAfterPrune", buildPath, electronVersion, platform, arch);
 
   if (platform === "mas") {
     try {
-      const myPlatform = platform === 'mas' ? 'darwin' : platform; // Use 'darwin' for macOS App Store builds
+      const myPlatform = platform === "mas" ? "darwin" : platform; // Use 'darwin' for macOS App Store builds
 
       console.log(
         "packageAfterPrune",
@@ -128,16 +123,35 @@ const packageAfterPruneHook = async (
         arch
       );
       // Execute yarn install with the specified arch in the build folder
-      execSync(`rm -rf yarn.lock node_modules/`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
-      execSync(`npm install --cpu ${arch} --os ${myPlatform} --arch=${arch} --platform=${myPlatform} --production`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env, npm_config_platform: myPlatform, npm_config_arch: arch } });
+      execSync(`rm -rf yarn.lock node_modules/`, {
+        cwd: buildPath,
+        stdio: "inherit",
+        env: { ...process.env },
+      });
+      execSync(
+        `npm install --cpu ${arch} --os ${myPlatform} --arch=${arch} --platform=${myPlatform} --production`,
+        {
+          cwd: buildPath,
+          stdio: "inherit",
+          env: {
+            ...process.env,
+            npm_config_platform: myPlatform,
+            npm_config_arch: arch,
+          },
+        }
+      );
     } catch (error) {
-      console.error('Error during npm install:', error.message);
-      execSync(`cat /Users/runner/.npm/_logs/*`, { cwd: buildPath, stdio: 'inherit', env: { ...process.env } });
+      console.error("Error during npm install:", error.message);
+      execSync(`cat /Users/runner/.npm/_logs/*`, {
+        cwd: buildPath,
+        stdio: "inherit",
+        env: { ...process.env },
+      });
     }
     await delay(1000);
 
     // Check each node_module for a gyp build and print native addon modules
-    const nodeModulesPath = path.join(buildPath, 'node_modules');
+    const nodeModulesPath = path.join(buildPath, "node_modules");
     const gypFiles = globSync(`${nodeModulesPath}/**/binding.gyp`);
     gypFiles.forEach((gypFile) => {
       console.log("Native addon detected in module:", path.dirname(gypFile));
@@ -161,7 +175,7 @@ const packageAfterPruneHook = async (
       const filePath = path.join(cwd, file);
       try {
         rmSync(filePath, { recursive: true, force: true });
-      } catch (e) { }
+      } catch (e) {}
     }
 
     const cwd2 = path.resolve(buildPath, "node_modules", "fs-xattr");
@@ -221,7 +235,10 @@ const packageAfterPruneHook = async (
 
     const prebuilds = globSync(`${buildPath}/**/prebuilds/*`);
     const nodeAbi = await import("node-abi");
-    const abiVersion = nodeAbi.getAbi(packageJson.devDependencies.electron, "electron");
+    const abiVersion = nodeAbi.getAbi(
+      packageJson.devDependencies.electron,
+      "electron"
+    );
     prebuilds.forEach(function (fpath) {
       if (!fpath.endsWith(".node")) return;
       if (!fpath.includes("darwin")) return;
@@ -232,10 +249,7 @@ const packageAfterPruneHook = async (
         "to",
         path.join(path.dirname(fpath), "..", `${darwin}.node`)
       );
-      renameSync(
-        fpath,
-        path.join(path.dirname(fpath), "..", `${darwin}.node`)
-      );
+      renameSync(fpath, path.join(path.dirname(fpath), "..", `${darwin}.node`));
     });
     const prebuildDirs = globSync(`${buildPath}/**/prebuilds`);
     prebuildDirs.forEach((dir) =>
@@ -289,54 +303,93 @@ const getMacSigningConfig = () => {
       type: isMas ? "distribution" : "distribution", //"development",
       hardenedRuntime: isMas ? false : true, // Hardened runtime is not needed for MAS
       gatekeeperAssess: isMas ? false : true, // Gatekeeper assessment is not needed for MAS
-      identity: isMas ? process.env.APPLE_MAS_IDENTITY : process.env.APPLE_DEVELOPER_ID_APPLICATION,
-      entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
-      entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
+      identity: isMas
+        ? process.env.APPLE_MAS_IDENTITY
+        : process.env.APPLE_DEVELOPER_ID_APPLICATION,
+      entitlements: path.join(
+        __dirname,
+        "_assets",
+        `entitlements${isMas ? ".mas" : ""}.plist`
+      ),
+      entitlementsInherit: path.join(
+        __dirname,
+        "_assets",
+        `entitlements${isMas ? ".mas" : ""}.inherit.plist`
+      ),
       preAutoEntitlements: false,
       preEmbedProvisioningProfile: isMas ? true : false,
       signatureFlags: "library",
-      provisioningProfile: path.join(__dirname, "_assets", 'embedded.provisionprofile'),
+      provisioningProfile: path.join(
+        __dirname,
+        "_assets",
+        "embedded.provisionprofile"
+      ),
       optionsForFile: (filePath) => {
-        if (filePath.endsWith('deepnest.app')) {
+        if (filePath.endsWith("deepnest.app")) {
           return {
-            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
+            entitlements: path.resolve(
+              __dirname,
+              "_assets",
+              `entitlements${isMas ? ".mas" : ""}.plist`
+            ),
             hardenedRuntime: isMas ? false : true,
-          }
+          };
         }
-        if (filePath.endsWith('deepnest Helper (GPU).app')) {
+        if (filePath.endsWith("deepnest Helper (GPU).app")) {
           return {
-            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.gpu.plist`),
+            entitlements: path.resolve(
+              __dirname,
+              "_assets",
+              `entitlements${isMas ? ".mas" : ""}.gpu.plist`
+            ),
             hardenedRuntime: isMas ? false : true,
-          }
+          };
         }
-        if (filePath.endsWith('deepnest Helper (Plugin).app')) {
+        if (filePath.endsWith("deepnest Helper (Plugin).app")) {
           return {
-            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plugin.plist`),
+            entitlements: path.resolve(
+              __dirname,
+              "_assets",
+              `entitlements${isMas ? ".mas" : ""}.plugin.plist`
+            ),
             hardenedRuntime: isMas ? false : true,
-          }
+          };
         }
-        if (filePath.endsWith('deepnest Helper (Renderer).app')) {
+        if (filePath.endsWith("deepnest Helper (Renderer).app")) {
           return {
-            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.renderer.plist`),
+            entitlements: path.resolve(
+              __dirname,
+              "_assets",
+              `entitlements${isMas ? ".mas" : ""}.renderer.plist`
+            ),
             hardenedRuntime: isMas ? false : true,
-          }
+          };
         }
-        if (filePath.endsWith('deepnest Helper.app')) {
+        if (filePath.endsWith("deepnest Helper.app")) {
           return {
-            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.renderer.plist`),
+            entitlements: path.resolve(
+              __dirname,
+              "_assets",
+              `entitlements${isMas ? ".mas" : ""}.renderer.plist`
+            ),
             hardenedRuntime: isMas ? false : true,
-          }
+          };
         }
         return {
-          entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
+          entitlements: path.resolve(
+            __dirname,
+            "_assets",
+            `entitlements${isMas ? ".mas" : ""}.plist`
+          ),
           hardenedRuntime: isMas ? false : true,
-        }
-      }
-    }
+        };
+      },
+    },
   };
 
   // Add notarization if all required environment variables exist
-  if (!isMas &&
+  if (
+    !isMas &&
     process.env.APPLE_API_KEY_ID &&
     process.env.APPLE_API_ISSUER &&
     process.env.NOTARIZATION_KEY_PATH
@@ -351,7 +404,7 @@ const getMacSigningConfig = () => {
   }
 
   return baseSignConfig;
-}
+};
 
 // Define base makers configuration
 const getMakers = () => {
@@ -362,10 +415,16 @@ const getMakers = () => {
       platforms: ["linux"],
       config: {
         options: {
-          categories: ["Graphics", "Utility", "VectorGraphics", "2DGraphics", "ImageProcessing"],
-          icon: path.resolve(__dirname, "_assets", "icon.svg")
-        }
-      }
+          categories: [
+            "Graphics",
+            "Utility",
+            "VectorGraphics",
+            "2DGraphics",
+            "ImageProcessing",
+          ],
+          icon: path.resolve(__dirname, "_assets", "icon.svg"),
+        },
+      },
     },
     {
       name: "@electron-forge/maker-squirrel",
@@ -378,7 +437,7 @@ const getMakers = () => {
     },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["darwin", "win32", "linux"],
+      platforms: ["win32", "linux"],
       config: (arch) => ({
         //macUpdateManifestBaseUrl: `https://dl.deepnest.app/deepnest-next/darwin/${arch}`
       }),
@@ -424,41 +483,56 @@ const getMakers = () => {
   ];
 
   if (!isMas && process.platform === "darwin") {
-    makers.push({
-      name: "@electron-forge/maker-dmg",
-      platforms: ["darwin"],
-      config: {
-        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
-        background: path.resolve(__dirname, "_assets", "dmg-background.png"),
-        icon: path.join(__dirname, "_assets", "icon.icns"),
-        format: "ULFO",
-        contents: () => [
-          {
-            x: 150,
-            y: 180,
-            type: "file",
-            path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
-          },
-          { x: 350, y: 180, type: "link", path: "/Applications" },
-        ],
-        additionalDMGOptions: {
-          window: {
-            size: {
-              width: 500,
-              height: 345,
+    makers.push(
+      {
+        name: "@electron-forge/maker-dmg",
+        platforms: ["darwin"],
+        config: {
+          name: `deepnest-${
+            makerPlatform == "darwin" ? "mac" : "mas"
+          }-${makerArch}`,
+          background: path.resolve(__dirname, "_assets", "dmg-background.png"),
+          icon: path.join(__dirname, "_assets", "icon.icns"),
+          format: "ULFO",
+          contents: () => [
+            {
+              x: 150,
+              y: 180,
+              type: "file",
+              path: `${process.cwd()}/out/deepnest-darwin-${makerArch}/deepnest.app`,
+            },
+            { x: 350, y: 180, type: "link", path: "/Applications" },
+          ],
+          additionalDMGOptions: {
+            window: {
+              size: {
+                width: 500,
+                height: 345,
+              },
             },
           },
         },
       },
-    });
+      {
+        name: "@electron-forge/maker-zip",
+        platforms: ["darwin"],
+        config: (arch) => ({
+          //macUpdateManifestBaseUrl: `https://dl.deepnest.app/deepnest-next/darwin/${arch}`
+        }),
+      }
+    );
   }
   if (makerPlatform === "mas") {
     makers.push({
       name: "@electron-forge/maker-pkg",
       platforms: ["mas"],
       config: {
-        name: `deepnest-${makerPlatform == 'darwin' ? 'mac' : 'mas'}-${makerArch}`,
-        identity: isMas ? process.env.APPLE_MAS_INSTALLER_IDENTITY : process.env.APPLE_INSTALLER_IDENTITY,
+        name: `deepnest-${
+          makerPlatform == "darwin" ? "mac" : "mas"
+        }-${makerArch}`,
+        identity: isMas
+          ? process.env.APPLE_MAS_INSTALLER_IDENTITY
+          : process.env.APPLE_INSTALLER_IDENTITY,
         appBundleId: "net.deepnest.app",
       },
     });
@@ -482,20 +556,21 @@ const getPublishers = () => {
       },
     },
     {
-      name: '@electron-forge/publisher-s3',
+      name: "@electron-forge/publisher-s3",
       config: {
-        bucket: process.env.S3_BUCKET || 'deepnest-next',
-        region: process.env.S3_REGION || 'eu-central-1',
+        bucket: process.env.S3_BUCKET || "deepnest-next",
+        region: process.env.S3_REGION || "eu-central-1",
         accessKeyId: process.env.S3_ACCESS_KEY_ID,
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-        endpoint: process.env.S3_ENDPOINT || 'https://s3.eu-central-1.amazonaws.com',
+        endpoint:
+          process.env.S3_ENDPOINT || "https://s3.eu-central-1.amazonaws.com",
         s3ForcePathStyle: true,
         public: true,
-        folder: 'deepnest-next',
+        folder: "deepnest-next",
         // refs: https://github.com/lobehub/lobe-chat/pull/5479
-        requestChecksumCalculation: 'WHEN_REQUIRED',
-        responseChecksumValidation: 'WHEN_REQUIRED',
-      }
+        requestChecksumCalculation: "WHEN_REQUIRED",
+        responseChecksumValidation: "WHEN_REQUIRED",
+      },
     },
   ];
 };
@@ -533,11 +608,14 @@ const buildConfig = () => {
   };
 
   // Add macOS signing configuration if applicable
-  if ((makerPlatform === "darwin" || makerPlatform === "mas") && process.platform === "darwin") {
+  if (
+    (makerPlatform === "darwin" || makerPlatform === "mas") &&
+    process.platform === "darwin"
+  ) {
     const signingConfig = getMacSigningConfig();
     config.packagerConfig = {
       ...config.packagerConfig,
-      ...signingConfig
+      ...signingConfig,
     };
   }
 
