@@ -300,36 +300,36 @@ const getMacSigningConfig = () => {
         if (filePath.endsWith('deepnest.app')) {
           return {
             entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
-            hardenedRuntime: true,
+            hardenedRuntime: isMas ? false : true,
           }
         }
         if (filePath.endsWith('deepnest Helper (GPU).app')) {
           return {
             entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.gpu.plist`),
-            hardenedRuntime: true,
+            hardenedRuntime: isMas ? false : true,
           }
         }
         if (filePath.endsWith('deepnest Helper (Plugin).app')) {
           return {
             entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plugin.plist`),
-            hardenedRuntime: true,
+            hardenedRuntime: isMas ? false : true,
           }
         }
         if (filePath.endsWith('deepnest Helper (Renderer).app')) {
           return {
             entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.renderer.plist`),
-            hardenedRuntime: true,
+            hardenedRuntime: isMas ? false : true,
           }
         }
         if (filePath.endsWith('deepnest Helper.app')) {
           return {
             entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.renderer.plist`),
-            hardenedRuntime: true,
+            hardenedRuntime: isMas ? false : true,
           }
         }
         return {
           entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
-          hardenedRuntime: true,
+          hardenedRuntime: isMas ? false : true,
         }
       }
     }
