@@ -8,13 +8,21 @@
     <true/>
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
     <true/>
-    <key>com.apple.security.cs.debugger</key>
-    <true/>
     <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
     <key>com.apple.security.files.downloads.read-write</key>
     <true/>
+    <key>com.apple.security.files.documents.read-write</key>
+    <true/>
     <key>com.apple.security.network.client</key>
     <true/>
+    <key>com.apple.application-identifier</key>
+    <string>$(AppIdentifierPrefix).net.deepnest.app</string>
+    <key>com.apple.developer.team-idenifier</key>
+    <string>$(AppIdentifierPrefix)</string>
+    <key>com.apple.security.application-groups</key>
+    <array>
+      <string>$(AppIdentifierPrefix).net.deepnest.app</string>
+    </array>
   </dict>
 </plist>
