@@ -339,6 +339,7 @@ const getMacSigningConfig = () => {
   ) {
     baseSignConfig.osxNotarize = {
       tool: "notarytool",
+      appBundleId: "net.deepnest.app",
       appleApiKey: process.env.NOTARIZATION_KEY_PATH,
       appleApiKeyId: process.env.APPLE_API_KEY_ID,
       appleApiIssuer: process.env.APPLE_API_ISSUER,
