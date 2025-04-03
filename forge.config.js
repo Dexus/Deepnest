@@ -291,26 +291,41 @@ const getMacSigningConfig = () => {
       entitlements: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
       entitlementsInherit: path.join(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.inherit.plist`),
       signatureFlags: "library",
-      optionsForFile: (file) => {
-        const index = file.replace('deepnest.app', '').indexOf('.app');
-        const inherit = index !== -1;
-        if (inherit) {
-          console.log(file);
+      optionsForFile: (filePath) => {
+        if (filePath.endsWith('deepnest.app')) {
+          return {
+            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
+            hardenedRuntime: true,
+          }
         }
-
+        if (filePath.endsWith('deepnest Helper (GPU).app')) {
+          return {
+            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.gpu.plist`),
+            hardenedRuntime: true,
+          }
+        }
+        if (filePath.endsWith('deepnest Helper (Plugin).app')) {
+          return {
+            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plugin.plist`),
+            hardenedRuntime: true,
+          }
+        }
+        if (filePath.endsWith('deepnest Helper (Renderer).app')) {
+          return {
+            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.renderer.plist`),
+            hardenedRuntime: true,
+          }
+        }
+        if (filePath.endsWith('deepnest Helper.app')) {
+          return {
+            entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.renderer.plist`),
+            hardenedRuntime: true,
+          }
+        }
         return {
-          entitlements: inherit
-            ? 'build/entitlements.mas.inherit.plist'
-            : 'build/entitlements.mas.plist',
-        };
-        // Here, we keep it simple and return a single entitlements.plist file.
-        // You can use this callback to map different sets of entitlements
-        // to specific files in your packaged app.
-        return {
-          entitlements: 'path/to/entitlements.plist',
-          signatureFlags: "library",
-          hardenedRuntime: isMas ? false : true,
-        };
+          entitlements: path.resolve(__dirname, "_assets", `entitlements${isMas ? '.mas' : ''}.plist`),
+          hardenedRuntime: true,
+        }
       }
     }
   };
