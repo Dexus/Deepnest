@@ -129,9 +129,7 @@ jobs:
         if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
         run: |
           # Find all entitlements plist files and replace the placeholder
-          find _assets -name "entitlements*.plist" -exec sed -i '' "s/\$(AppIdentifierPrefix)/$APPLE_NOTARY_KEY_ID/g" {} \;
-        env:
-          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          find _assets -name "entitlements*.plist" -exec sed -i '' "s/\$(AppIdentifierPrefix)/${{secrets.APPLE_TEAM_PREFIX}}/g" {} \;
 
       - name: Publish Dry (${{ matrix.arch }})
         uses: DeineAgenturUG/retry@6278ba3ea01ddc52e75d82766fca6cf4d35835cd
