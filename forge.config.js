@@ -8,7 +8,7 @@ const path = require("path");
 
 // Get the package version from package.json
 const packageJson = require("./package.json");
-const { type } = require("os");
+const { type, version } = require("os");
 const packageVersion = packageJson.version;
 
 // Extract platform and arch from command line arguments
@@ -634,6 +634,7 @@ const buildConfig = () => {
     },
     makers: getMakers(),
     publishers: getPublishers(),
+    version: `${packageVersion}.${process.env.GITHUB_RUN_ID}`,
     plugins: [
       {
         name: "@electron-forge/plugin-auto-unpack-natives",
