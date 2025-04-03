@@ -129,7 +129,7 @@ jobs:
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
 
       - name: Build (${{ matrix.arch }})
-        uses: nick-fields/retry@v3
+        uses: DeineAgenturUG/retry@6278ba3ea01ddc52e75d82766fca6cf4d35835cd
         with:
           timeout_minutes: 60
           max_attempts: 3

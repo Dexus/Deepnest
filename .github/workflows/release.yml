@@ -126,7 +126,7 @@ jobs:
           APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
 
       - name: Publish Dry (${{ matrix.arch }})
-        uses: nick-fields/retry@v3
+        uses: DeineAgenturUG/retry@6278ba3ea01ddc52e75d82766fca6cf4d35835cd
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NOTARIZATION_KEY_PATH: "${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
