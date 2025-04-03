@@ -316,11 +316,6 @@ const getMacSigningConfig = () => {
         "_assets",
         `entitlements${isMas ? ".mas" : ""}.inherit.plist`
       ),
-      entitlementsLoginHelper: path.join(
-        __dirname,
-        "_assets",
-        `entitlements${isMas ? ".mas" : ""}.loginhelper.plist`
-      ),
       preAutoEntitlements: false,
       preEmbedProvisioningProfile: isMas ? true : false,
       signatureFlags: "library",
@@ -330,12 +325,28 @@ const getMacSigningConfig = () => {
         "embedded.provisionprofile"
       ),
       optionsForFile: (filePath) => {
+
         if (filePath.endsWith("deepnest.app")) {
           return {
             entitlements: path.resolve(
               __dirname,
               "_assets",
               `entitlements${isMas ? ".mas" : ""}.plist`
+            ),
+            hardenedRuntime: isMas ? false : true,
+            provisioningProfile: path.join(
+              __dirname,
+              "_assets",
+              "embedded.provisionprofile"
+            ),
+          };
+        }
+        if (filePath.endsWith("deepnest Login Helper.app")) {
+          return {
+            entitlements: path.resolve(
+              __dirname,
+              "_assets",
+              `entitlements${isMas ? ".mas" : ""}.loginhelper.plist`
             ),
             hardenedRuntime: isMas ? false : true,
             provisioningProfile: path.join(
