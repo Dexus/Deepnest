@@ -137,8 +137,12 @@ jobs:
           command: |
             mkdir -p out/make/
             if [[ "${{ matrix.target }}" == "mas" && ("${{ matrix.os }}" == "macos-13" || "${{ matrix.os }}" == "macos-latest") ]]; then
-              npm run make -- --arch ${{ matrix.arch }} || find ./out -type f
-              npm run make -- --arch universal --platform mas || find ./out -type f
+              npm run make -- --arch ${{ matrix.arch }} --platform mas || find ./out -type f
+              if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+                # For macOS 13, we need to use the universal build for the MAS
+                # because it doesn't support arm64 builds.
+                npm run make -- --arch universal --platform mas || find ./out -type f
+              fi
             else
               npm run make -- --arch ${{ matrix.arch }}
             fi

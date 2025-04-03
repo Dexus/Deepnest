@@ -190,7 +190,7 @@ jobs:
           if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "") ]]; then
             npm run publish:fromdry -- --arch ${{ matrix.arch }}
           fi
-          if [[ ("${{ matrix.os }}" == "macos-13" && "${{ matrix.arch }}" == "x64" && "${{ matrix.target }}" == "mas") || ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
+          if [[ ("${{ matrix.os }}" == "macos-latest" && "${{ matrix.arch }}" == "arm64" && "${{ matrix.target }}" == "mas") ]]; then
             npm run publish:fromdry -- --arch universal --platform mas
           fi
 
