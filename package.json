@@ -154,6 +154,7 @@
       "extendInfo": {
         "ITSAppUsesNonExemptEncryption": false
       },
+      "provisioningProfile": "_build/embedded.provisionprofile",
       "electronLanguages": [
         "en",
         "en-US",

@@ -161,6 +161,9 @@ jobs:
           security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
           security unlock-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
 
+          # provisioning profile
+          echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_build/embedded.provisionprofile"
+
           # Import signing certificate (using one p12 for both app and installer)
           echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/signing_cert.p12"
           security import "${{ runner.temp }}/signing_cert.p12" -P "${{ secrets.APPLE_MAC_CERT_PASS }}" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/sbin/installer -k ${KEYCHAIN_PATH}
