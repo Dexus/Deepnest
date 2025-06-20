@@ -157,7 +157,7 @@
       ],
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
-      "identity": "Developer ID Application: DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)",
+      "identity": "DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)",
       "target": [
         {
           "target": "dmg",
