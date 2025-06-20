@@ -143,12 +143,17 @@ jobs:
         run: |
           # Retrieve the release tag from the previous step
           TAG=${{ steps.get_release.outputs.tag }}
+
           # Set the build directory name using the release tag and architecture
           BUILD_DIR="deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}"
           echo "DN_BUILD_DIR=deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}" >> $GITHUB_ENV
           echo "Creating build in: $BUILD_DIR"
+
           # Run Electron Packager to package the application into the specified build directory
           npx @electron/packager . "deepnest-${TAG}" --overwrite
+
+          # Zip the build directory with the same name
+          zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
 
           # create temporary keychain
           KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
@@ -162,7 +167,9 @@ jobs:
           rm "${KEYCHAIN_PATH}.apikey"
 
           # Notarize the app
-          xcrun notarytool submit --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait "${BUILD_DIR}/deepnest-${TAG}.app"
+          xcrun notarytool submit --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait "${BUILD_DIR}.zip"
+
+          rm "${BUILD_DIR}.zip"
 
           # Staple the notarization ticket to the app
           xcrun stapler staple "${BUILD_DIR}/deepnest-${TAG}.app"
@@ -170,8 +177,9 @@ jobs:
           # Clean up the keychain
           security delete-keychain ${KEYCHAIN_PATH}
 
-          # Zip the build directory with the same name
-          zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
+          # create a zip file of the app
+          zip -r "${BUILD_DIR}.zip" "${BUILD_DIR}"
+
 
       - uses: dexus-forks/xcode-notarization-action@v1
         if: matrix.os == 'macos-latest' && false
