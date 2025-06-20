@@ -153,7 +153,7 @@ jobs:
           KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
           CSC_KEYCHAIN="${KEYCHAIN_PATH}"
           CSC_IDENTITY_AUTO_DISCOVERY="true"
-          CSC_NAME="${{ secrets.APPLE_DEVELOPER_ID_APPLICATION }}"
+          CSC_NAME="DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)"
           KEYCHAIN_PASS=$(uuidgen)
           security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
           security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
