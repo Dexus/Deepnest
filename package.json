@@ -147,9 +147,13 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
+      "type": "distribution",
       "icon": "icon.icns",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
+      "extendInfo": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
       "electronLanguages": [
         "en",
         "en-US",
@@ -157,7 +161,7 @@
       ],
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
-      "identity": "DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)",
+      "notarize": true,
       "target": [
         {
           "target": "dmg",
@@ -181,6 +185,13 @@
           ]
         }
       ]
+    },
+    "dmg": {
+      "sign": true,
+      "publish": "never"
+    },
+    "pkg": {
+      "publish": "never"
     }
   },
   "contributors": [

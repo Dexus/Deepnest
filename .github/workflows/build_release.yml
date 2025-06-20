@@ -150,10 +150,12 @@ jobs:
           echo "Creating build in: $BUILD_DIR"
 
           # create temporary keychain
-          KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
-          CSC_KEYCHAIN="${KEYCHAIN_PATH}"
-          CSC_IDENTITY_AUTO_DISCOVERY="true"
-          CSC_NAME="DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)"
+          export KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
+          export CSC_KEYCHAIN="${KEYCHAIN_PATH}"
+          export CSC_IDENTITY_AUTO_DISCOVERY="true"
+          export CSC_NAME="DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)"
+          export APPLE_KEYCHAIN="${KEYCHAIN_PATH}"
+          export APPLE_KEYCHAIN_PROFILE="deepnest-next"
           KEYCHAIN_PASS=$(uuidgen)
           security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
           security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
