@@ -153,6 +153,7 @@ jobs:
           zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
 
       - uses: dexus-forks/xcode-notarization-action@v1
+        if: matrix.os == 'macos-latest'
         with:
           app-path: '${{ env.DN_BUILD_DIR }}/deepnest-*.app' # Path to the .app file to notarize
           apple-id: ${{ secrets.APPLE_ID }}
@@ -162,6 +163,18 @@ jobs:
           staple: 'true' # if you wish to skip running stapler
           keychain-profile: 'deepnest-profile' # custom name for --keychain-profile
           xcode-path: '/Applications/Xcode_15.4.app' # defaults to /Applications/Xcode_15.4.app
+
+      - uses: dexus-forks/xcode-notarization-action@v1
+        if: matrix.os == 'macos-13'
+        with:
+          app-path: '${{ env.DN_BUILD_DIR }}/deepnest-*.app' # Path to the .app file to notarize
+          apple-id: ${{ secrets.APPLE_ID }}
+          password: ${{ secrets.PASSWORD }}
+          team-id: ${{ secrets.TEAM_ID }}
+          # Further Parameters:
+          staple: 'true' # if you wish to skip running stapler
+          keychain-profile: 'deepnest-profile' # custom name for --keychain-profile
+          xcode-path: '/Applications/Xcode_15.2.app' # defaults to /Applications/Xcode_15.4.app
 
       - name: Artefakt an letztes Release anhängen
         uses: actions/upload-release-asset@v1
