@@ -149,12 +149,6 @@ jobs:
           echo "DN_BUILD_DIR=deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}" >> $GITHUB_ENV
           echo "Creating build in: $BUILD_DIR"
 
-          # Run Electron Packager to package the application into the specified build directory
-          npx @electron/packager . "deepnest-${TAG}" --overwrite
-
-          # Zip the build directory with the same name
-          zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
-
           # create temporary keychain
           KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
           KEYCHAIN_PASS=$(uuidgen)
@@ -183,6 +177,14 @@ jobs:
 
           # Clean up the keychain
           security delete-keychain ${KEYCHAIN_PATH}
+
+          # Run Electron Packager to package the application into the specified build directory
+          npm run build-dist:mac
+
+          ls -als
+
+          # Zip the build directory with the same name
+          zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
 
           # create a zip file of the app
           zip -r "${BUILD_DIR}.zip" "${BUILD_DIR}"
