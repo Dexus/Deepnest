@@ -151,6 +151,8 @@ jobs:
 
           # create temporary keychain
           KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
+          CSC_KEYCHAIN="${KEYCHAIN_PATH}"
+          CSC_IDENTITY_AUTO_DISCOVERY=true
           KEYCHAIN_PASS=$(uuidgen)
           security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
           security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
