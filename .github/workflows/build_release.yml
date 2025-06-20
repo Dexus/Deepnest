@@ -170,7 +170,7 @@ jobs:
           # Notarize the app
           #xcrun notarytool submit --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait "${BUILD_DIR}.zip"
 
-          rm "${BUILD_DIR}.zip"
+          rm "${BUILD_DIR}.zip" || true
 
           # Staple the notarization ticket to the app
           #xcrun stapler staple "${BUILD_DIR}/deepnest-${TAG}.app"
