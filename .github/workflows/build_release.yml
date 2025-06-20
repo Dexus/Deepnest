@@ -158,11 +158,11 @@ jobs:
           security unlock-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
           # import credentials from secrets
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${KEYCHAIN_PATH}.apikey"
-          xcrun notarytool store-credentials "${{ inputs.keychain-profile }}" -k "${KEYCHAIN_PATH}.apikey" -d "${{ secrets.APPLE_AKY_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --keychain "${KEYCHAIN_PATH}"
+          xcrun notarytool store-credentials "deepnest-next" -k "${KEYCHAIN_PATH}.apikey" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --keychain "${KEYCHAIN_PATH}"
           rm "${KEYCHAIN_PATH}.apikey"
 
           # Notarize the app
-          xcrun notarytool submit ${{ inputs.app-path }} --keychain-profile "${{ inputs.keychain-profile }}" --keychain "${KEYCHAIN_PATH}" --wait
+          xcrun notarytool submit ${{ inputs.app-path }} --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait
 
           # Staple the notarization ticket to the app
           xcrun stapler staple ${{ inputs.app-path }}
