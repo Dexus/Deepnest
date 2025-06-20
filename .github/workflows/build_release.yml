@@ -161,6 +161,13 @@ jobs:
           security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
           security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
           security unlock-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
+
+          # Import signing certificate (using one p12 for both app and installer)
+          echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/signing_cert.p12"
+          security import "${{ runner.temp }}/signing_cert.p12" -P "${{ secrets.APPLE_MAC_CERT_PASS }}" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/sbin/installer -k ${KEYCHAIN_PATH}
+          security set-key-partition-list -S apple-tool:,apple:,codesign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" ${KEYCHAIN_PATH}
+          rm "${{ runner.temp }}/signing_cert.p12"
+
           # import credentials from secrets
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${KEYCHAIN_PATH}.apikey"
           xcrun notarytool store-credentials "deepnest-next" -k "${KEYCHAIN_PATH}.apikey" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --keychain "${KEYCHAIN_PATH}"

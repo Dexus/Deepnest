@@ -110,6 +110,10 @@
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node"
+    ],
     "directories": {
       "app": ".",
       "output": "deepnest-v${version}-win32-${arch}"
@@ -142,7 +146,39 @@
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "icon.icns",
-      "hardenedRuntime": true
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "electronLanguages": [
+        "en",
+        "en-US",
+        "en_US"
+      ],
+      "entitlements": "_build/entitlements.mac.plist",
+      "entitlementsInherit": "_build/entitlements.mac.plist",
+      "identity": "Developer ID Application: DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "pkg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     }
   },
   "contributors": [
