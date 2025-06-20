@@ -145,11 +145,23 @@ jobs:
           TAG=${{ steps.get_release.outputs.tag }}
           # Set the build directory name using the release tag and architecture
           BUILD_DIR="deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}"
+          echo "DN_BUILD_DIR=deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}" >> $GITHUB_ENV
           echo "Creating build in: $BUILD_DIR"
           # Run Electron Packager to package the application into the specified build directory
           npx @electron/packager . "deepnest-${TAG}" --overwrite
           # Zip the build directory with the same name
           zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
+
+      - uses: dexus-forks/xcode-notarization-action@v1
+        with:
+          app-path: '${{ env.DN_BUILD_DIR }}/deepnest-*.app' # Path to the .app file to notarize
+          apple-id: ${{ secrets.APPLE_ID }}
+          password: ${{ secrets.PASSWORD }}
+          team-id: ${{ secrets.TEAM_ID }}
+          # Further Parameters:
+          staple: 'true' # if you wish to skip running stapler
+          keychain-profile: 'deepnest-profile' # custom name for --keychain-profile
+          xcode-path: '/Applications/Xcode_15.4.app' # defaults to /Applications/Xcode_15.4.app
 
       - name: Artefakt an letztes Release anhängen
         uses: actions/upload-release-asset@v1
