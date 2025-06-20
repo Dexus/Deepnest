@@ -118,7 +118,7 @@
     ],
     "directories": {
       "app": ".",
-      "output": "deepnest-v${version}-win32-${arch}"
+      "output": "deepnest-v${version}"
     },
     "win": {
       "target": [

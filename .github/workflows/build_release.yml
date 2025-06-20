@@ -176,7 +176,7 @@ jobs:
           #xcrun stapler staple "${BUILD_DIR}/deepnest-${TAG}.app"
 
           # Run Electron Packager to package the application into the specified build directory
-          npm run build-dist:mac
+          npm run build-dist:mac-signed
 
           ls -als
 
