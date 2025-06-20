@@ -162,7 +162,7 @@ jobs:
           rm "${KEYCHAIN_PATH}.apikey"
 
           # Notarize the app
-          xcrun notarytool submit "${BUILD_DIR}/deepnest-*.app" --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait
+          xcrun notarytool submit --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait "${BUILD_DIR}/deepnest-*.app"
 
           # Staple the notarization ticket to the app
           xcrun stapler staple "${BUILD_DIR}/deepnest-*.app"
