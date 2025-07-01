@@ -2,11 +2,12 @@ import { notarize } from '@electron/notarize';
 import path from 'path';
 
 export default async function notarizing(context) {
+  console.log(context);
   const { electronPlatformName, appOutDir } = context;
 
   if (electronPlatformName !== 'darwin') {
     console.log('Skipping notarization - not building for macOS:', electronPlatformName);
-    return;
+    //return;
   }
 
   const appName = context.packager.appInfo.productFilename;
