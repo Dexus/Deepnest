@@ -261,7 +261,8 @@ jobs:
           set -e APPLE_API_KEY
           set -e APPLE_API_KEY_ID
           set -e APPLE_API_ISSUER
-          npm run build-dist:mac-signed -- --${{ env.ARCH }}
+          npx electron-rebuild --arch=${{ env.ARCH }} --platform=darwin -f -w @deepnest/svg-preprocessor
+          npx electron-builder build --mac --${{ env.ARCH }} --publish never
 
           find . -type f -name "deepnest-v1*"
 
