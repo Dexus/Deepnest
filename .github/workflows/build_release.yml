@@ -228,7 +228,7 @@ jobs:
           echo "Apple API Key: ${{ secrets.APPLE_API_KEY }}"
           echo "Apple API Key ID: ${{ secrets.APPLE_API_KEY_ID }}"
           echo "Apple API Issuer: ${{ secrets.APPLE_API_ISSUER }}"
-          echo "Environment: ${{ github.environment }}"
+          echo "Environment: ${{ github.env }}"
           echo "APPLE_API_KEY exists: ${{ secrets.APPLE_API_KEY != '' }}"
           echo "APPLE_TEAM_ID exists: ${{ secrets.APPLE_TEAM_ID != '' }}"
           echo "APPLE_API_ISSUER exists: ${{ secrets.APPLE_API_ISSUER != '' }}"
