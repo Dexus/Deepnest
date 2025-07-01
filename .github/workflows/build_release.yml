@@ -256,16 +256,16 @@ jobs:
           set -e APPLE_API_ISSUER
           npm run build-dist:mac-signed
 
-          ls -als
+          ls -alsr "${BUILD_DIR}"
 
           # Clean up the keychain
           security delete-keychain ${KEYCHAIN_PATH}
 
           # Zip the build directory with the same name
-          zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
+          # zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
 
           # create a zip file of the app
-          zip -r "${BUILD_DIR}.zip" "${BUILD_DIR}"
+          # zip -r "${BUILD_DIR}.zip" "${BUILD_DIR}"
 
       - name: Notarize the app
         if: always()
