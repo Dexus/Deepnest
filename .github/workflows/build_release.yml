@@ -221,8 +221,8 @@ jobs:
 
 
           # provisioning profile
-          echo "Provisioning profile: ${{ secrets.APPLE_PROVISIONING_PROFILE }}"
-          echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_build/embedded.provisionprofile"
+          # echo "Provisioning profile: ${{ secrets.APPLE_PROVISIONING_PROFILE }}"
+          # echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_build/embedded.provisionprofile"
 
           # import credentials from secrets
           echo "Apple API Key: ${{ secrets.APPLE_API_KEY }}"
