@@ -18,9 +18,8 @@ export default async function notarizing(context) {
     await notarize({
       tool: 'notarytool',
       appPath: appPath,
-      appleApiKey: process.env.APPLE_API_KEY_PATH,
-      appleApiKeyId: process.env.APPLE_API_KEY_ID,
-      appleApiIssuer: process.env.APPLE_API_ISSUER,
+      keychain: process.env.KEYCHAIN_PATH || 'login.keychain-db',
+      keychainProfile: 'deepnest-next',
     });
     console.log('Notarization successful');
   } catch (error) {
