@@ -164,7 +164,6 @@
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
       "notarize": true,
-      "sign": true,
       "target": [
         {
           "target": "dmg",
