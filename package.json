@@ -188,11 +188,7 @@
       ]
     },
     "dmg": {
-      "sign": true,
-      "publish": "never"
-    },
-    "pkg": {
-      "publish": "never"
+      "sign": true
     }
   },
   "contributors": [
