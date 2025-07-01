@@ -233,9 +233,11 @@ jobs:
           echo "APPLE_TEAM_ID exists: ${{ secrets.APPLE_TEAM_ID != '' }}"
           echo "APPLE_API_ISSUER exists: ${{ secrets.APPLE_API_ISSUER != '' }}"
           echo "APPLE_API_KEY_ID exists: ${{ secrets.APPLE_API_KEY_ID != '' }}"
-          echo "APPLE_MAC_CERT exists: ${{ secrets.APPLE_MAC_CERT != '' }}"
+          echo "APPLE_APP_CERT exists: ${{ secrets.APPLE_APP_CERT != '' }}"
           echo "APPLE_PROVISIONING_PROFILE exists: ${{ secrets.APPLE_PROVISIONING_PROFILE != '' }}"
           echo "APPLE_CERT_PASSWORD exists: ${{ secrets.APPLE_CERT_PASSWORD != '' }}"
+          echo "APPLE_INSTALLER_CERT exists: ${{ secrets.APPLE_INSTALLER_CERT != '' }}"
+          echo "APPLE_MAC_CERT exists: ${{ secrets.APPLE_MAC_CERT != '' }}"
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${APPLE_API_KEY_PATH}"
           xcrun notarytool store-credentials "deepnest-next" -k "${APPLE_API_KEY_PATH}" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --team-id "${{ secrets.APPLE_TEAM_ID }}" --keychain "${KEYCHAIN_PATH}"
 
