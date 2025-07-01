@@ -86,7 +86,7 @@ jobs:
 
 
   build-and-release-macos:
-    environment: deepnest-test
+    environment: "deepnest-test"
     env:
       BUILD_FOR_OS: darwin
     strategy:
@@ -183,7 +183,7 @@ jobs:
 
           # Key partition list setzen (KORRIGIERT)
           security set-key-partition-list \
-            -S apple-tool:,apple:,codesign:,productsign:,installer:,pkgbuild: \
+            -S apple-tool:,apple: \
             -s -k "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
 
           rm "${{ runner.temp }}/app_cert.p12"
