@@ -261,6 +261,10 @@ jobs:
           set -e APPLE_API_KEY
           set -e APPLE_API_KEY_ID
           set -e APPLE_API_ISSUER
+
+          export npm_config_arch="${{ env.ARCH }}"
+          export npm_config_platform="darwin"
+          npm i --arch=${{ env.ARCH }} --platform=darwin --unsafe-perm --build-from-source
           npx electron-rebuild --arch=${{ env.ARCH }} --platform=darwin -f -w @deepnest/svg-preprocessor
           npx electron-builder build --mac --${{ env.ARCH }} --publish never
 
