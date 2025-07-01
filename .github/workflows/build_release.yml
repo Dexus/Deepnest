@@ -153,8 +153,9 @@ jobs:
           KEYCHAIN_PASS=$(uuidgen)
 
           security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
-          security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
+          security default-keychain -s ${KEYCHAIN_PATH}
           security unlock-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
+          security set-keychain-settings -lt 3600 -u ${KEYCHAIN_PATH}
 
           # Import Application Certificate
           echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/app_cert.p12"
@@ -183,6 +184,9 @@ jobs:
 
           rm "${{ runner.temp }}/app_cert.p12"
 
+          # Debug: Verfügbare Identitäten anzeigen
+          echo "Available code signing identities:"
+          security find-identity -v -p codesigning ${KEYCHAIN_PATH}
 
           # Retrieve the release tag from the previous step
           TAG=${{ steps.get_release.outputs.tag }}
@@ -194,9 +198,9 @@ jobs:
 
           # create temporary keychain
           export APPLE_API_KEY_PATH="${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          # CSC Variablen setzen (mit automatischer Erkennung)
+          export CSC_IDENTITY_AUTO_DISCOVERY="true"
           export CSC_KEYCHAIN="${KEYCHAIN_PATH}"
-          export CSC_IDENTITY_AUTO_DISCOVERY="false"
-          export CSC_NAME="DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)"
           export APPLE_KEYCHAIN="${KEYCHAIN_PATH}"
           export APPLE_KEYCHAIN_PROFILE="deepnest-next"
 
