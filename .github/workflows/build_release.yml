@@ -224,6 +224,9 @@ jobs:
           #xcrun stapler staple "${BUILD_DIR}/deepnest-${TAG}.app"
 
           # Run Electron Packager to package the application into the specified build directory
+          set -e APPLE_API_KEY
+          set -e APPLE_API_KEY_ID
+          set -e APPLE_API_ISSUER
           npm run build-dist:mac-signed
 
           ls -als

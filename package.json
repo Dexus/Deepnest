@@ -163,9 +163,7 @@
       ],
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
-      "notarize": {
-        "teamId": "BMKLVA728K"
-      },
+      "notarize": true,
       "_sign": "helper_scripts/sign_mac.js",
       "target": [
         {
