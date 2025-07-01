@@ -164,7 +164,7 @@
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
       "notarize": true,
-      "sign": "helper_scripts/sign_mac.js",
+      "sign": true,
       "target": [
         {
           "target": "dmg",
@@ -194,6 +194,7 @@
       "publish": "never"
     },
     "pkg": {
+      "sign": true,
       "publish": "never"
     }
   },
