@@ -159,6 +159,8 @@ jobs:
           security set-keychain-settings -lt 3600 -u ${KEYCHAIN_PATH}
 
           # Import Application Certificate
+          CSC_LINK="${{ secrets.APPLE_MAC_CERT }}"
+          CSC_KEY_PASSWORD="${{ secrets.APPLE_CERT_PASSWORD }}"
           echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/app_cert.p12"
           security import "${{ runner.temp }}/app_cert.p12" \
             -P "${{ secrets.APPLE_CERT_PASSWORD }}" \

@@ -195,7 +195,8 @@
     },
     "pkg": {
       "publish": "never"
-    }
+    },
+    "afterSign": "./helper_scripts/sign_mac.js"
   },
   "contributors": [
     {
