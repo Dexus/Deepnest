@@ -224,10 +224,14 @@ jobs:
 
 
           # provisioning profile
+          echo "Provisioning profile: ${{ secrets.APPLE_PROVISIONING_PROFILE }}"
           echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_build/embedded.provisionprofile"
 
           # import credentials from secrets
-          echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${APPLE_API_KEY_PATH}"
+          echo "Apple API Key: ${{ secrets.APPLE_API_KEY }}"
+          echo "Apple API Key ID: ${{ secrets.APPLE_API_KEY_ID }}"
+          echo "Apple API Issuer: ${{ secrets.APPLE_API_ISSUER }}"
+          echo -n "${{ env.APPLE_API_KEY_B64 }}" | base64 --decode -o "${APPLE_API_KEY_PATH}"
           xcrun notarytool store-credentials "deepnest-next" -k "${APPLE_API_KEY_PATH}" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --keychain "${KEYCHAIN_PATH}"
 
 
