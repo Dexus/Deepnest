@@ -267,7 +267,7 @@ jobs:
           npm i --arch=${{ env.ARCH }} --platform=darwin --unsafe-perm --build-from-source
           npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/svg-preprocessor
           npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/svg-preprocessor
-          npx electron-builder build --mac --${{ env.ARCH }} --publish never
+          npx electron-builder build --mac --universal --publish never
 
           find . -type f -name "deepnest-v1*"
 
