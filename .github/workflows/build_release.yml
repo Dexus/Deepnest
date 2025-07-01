@@ -229,11 +229,15 @@ jobs:
           echo "Apple API Key ID: ${{ secrets.APPLE_API_KEY_ID }}"
           echo "Apple API Issuer: ${{ secrets.APPLE_API_ISSUER }}"
           echo "Environment: ${{ github.environment }}"
+          echo "APPLE_API_KEY exists: ${{ secrets.APPLE_API_KEY != '' }}"
+          echo "APPLE_TEAM_ID exists: ${{ secrets.APPLE_TEAM_ID != '' }}"
+          echo "APPLE_API_ISSUER exists: ${{ secrets.APPLE_API_ISSUER != '' }}"
           echo "APPLE_API_KEY_ID exists: ${{ secrets.APPLE_API_KEY_ID != '' }}"
           echo "APPLE_MAC_CERT exists: ${{ secrets.APPLE_MAC_CERT != '' }}"
+          echo "APPLE_PROVISIONING_PROFILE exists: ${{ secrets.APPLE_PROVISIONING_PROFILE != '' }}"
           echo "APPLE_CERT_PASSWORD exists: ${{ secrets.APPLE_CERT_PASSWORD != '' }}"
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${APPLE_API_KEY_PATH}"
-          xcrun notarytool store-credentials "deepnest-next" -k "${APPLE_API_KEY_PATH}" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --keychain "${KEYCHAIN_PATH}"
+          xcrun notarytool store-credentials "deepnest-next" -k "${APPLE_API_KEY_PATH}" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --team-id "${{ secrets.APPLE_TEAM_ID }}" --keychain "${KEYCHAIN_PATH}"
 
 
           # Notarize the app
