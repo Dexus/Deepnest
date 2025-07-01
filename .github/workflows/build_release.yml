@@ -85,6 +85,7 @@ jobs:
 
 
   build-and-release-macos:
+    environment: deepnest-test
     env:
       BUILD_FOR_OS: darwin
     strategy:
@@ -145,6 +146,44 @@ jobs:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
+          # Keychain Setup
+          export KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
+          export APPLE_API_KEY_PATH="${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          export CSC_KEYCHAIN="${KEYCHAIN_PATH}"
+          KEYCHAIN_PASS=$(uuidgen)
+
+          security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
+          security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
+          security unlock-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
+
+          # Import Application Certificate
+          echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/app_cert.p12"
+          security import "${{ runner.temp }}/app_cert.p12" \
+            -P "${{ secrets.APPLE_CERT_PASSWORD }}" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security \
+            -k ${KEYCHAIN_PATH}
+
+          # Import Installer Certificate (falls vorhanden)
+          if [ -n "${{ secrets.APPLE_INSTALLER_CERT }}" ]; then
+            echo -n "${{ secrets.APPLE_INSTALLER_CERT }}" | base64 --decode -o "${{ runner.temp }}/installer_cert.p12"
+            security import "${{ runner.temp }}/installer_cert.p12" \
+              -P "${{ secrets.APPLE_CERT_PASSWORD }}" \
+              -T /usr/bin/productbuild \
+              -T /usr/bin/productsign \
+              -T /usr/bin/pkgbuild \
+              -T /usr/sbin/installer \
+              -k ${KEYCHAIN_PATH}
+            rm "${{ runner.temp }}/installer_cert.p12"
+          fi
+
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign:,productsign:,installer:,pkgbuild: \
+            -s -k "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
+
+          rm "${{ runner.temp }}/app_cert.p12"
+
+
           # Retrieve the release tag from the previous step
           TAG=${{ steps.get_release.outputs.tag }}
 
@@ -154,26 +193,16 @@ jobs:
           echo "Creating build in: $BUILD_DIR"
 
           # create temporary keychain
-          export KEYCHAIN_PATH=$RUNNER_TEMP/notarization.keychain-db
           export APPLE_API_KEY_PATH="${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           export CSC_KEYCHAIN="${KEYCHAIN_PATH}"
           export CSC_IDENTITY_AUTO_DISCOVERY="false"
           export CSC_NAME="DeineAgentur UG (haftungsbeschraenkt) (BMKLVA728K)"
           export APPLE_KEYCHAIN="${KEYCHAIN_PATH}"
           export APPLE_KEYCHAIN_PROFILE="deepnest-next"
-          KEYCHAIN_PASS=$(uuidgen)
-          security create-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
-          security set-keychain-settings -lut 900 ${KEYCHAIN_PATH}
-          security unlock-keychain -p "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
+
 
           # provisioning profile
           echo -n "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 --decode -o "_build/embedded.provisionprofile"
-
-          # Import signing certificate (using one p12 for both app and installer)
-          echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/signing_cert.p12"
-          security import "${{ runner.temp }}/signing_cert.p12" -P "${{ secrets.APPLE_MAC_CERT_PASS }}" -A -k ${KEYCHAIN_PATH}
-          security set-key-partition-list -S apple-tool:,apple:,codesign:,productsign:,installer:,pkgbuild: -s -k "$APPLE_KEYCHAIN_PASS" ${KEYCHAIN_PATH}
-          rm "${{ runner.temp }}/signing_cert.p12"
 
           # import credentials from secrets
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${APPLE_API_KEY_PATH}"
