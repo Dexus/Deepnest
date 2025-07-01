@@ -10,6 +10,7 @@ export default async function notarizing(context) {
   return notarize({
     appPath: `${appOutDir}/${appName}.app`,
     appleApiIssuer: process.env.APPLE_API_ISSUER,
-    appleApiKey: process.env.APPLE_API_KEY_PATH
+    appleApiKey: process.env.APPLE_API_KEY_PATH,
+    appleApiKeyId: process.env.APPLE_API_KEY_ID,
   });
 };
