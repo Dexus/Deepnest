@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-release-linux:
+    if: false == true
     env:
       BUILD_FOR_OS: linux
     strategy:
@@ -281,6 +282,7 @@ jobs:
           asset_content_type: application/zip
 
   build-and-release-windows:
+    if: false == true
     env:
       BUILD_FOR_OS: win32
     strategy:
