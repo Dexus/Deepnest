@@ -161,6 +161,7 @@ jobs:
           echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/app_cert.p12"
           security import "${{ runner.temp }}/app_cert.p12" \
             -P "${{ secrets.APPLE_CERT_PASSWORD }}" \
+            -A \
             -T /usr/bin/codesign \
             -T /usr/bin/security \
             -k ${KEYCHAIN_PATH}
@@ -170,6 +171,7 @@ jobs:
             echo -n "${{ secrets.APPLE_INSTALLER_CERT }}" | base64 --decode -o "${{ runner.temp }}/installer_cert.p12"
             security import "${{ runner.temp }}/installer_cert.p12" \
               -P "${{ secrets.APPLE_CERT_PASSWORD }}" \
+              -A \
               -T /usr/bin/productbuild \
               -T /usr/bin/productsign \
               -T /usr/bin/pkgbuild \
@@ -178,6 +180,7 @@ jobs:
             rm "${{ runner.temp }}/installer_cert.p12"
           fi
 
+          # Key partition list setzen (KORRIGIERT)
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign:,productsign:,installer:,pkgbuild: \
             -s -k "${KEYCHAIN_PASS}" ${KEYCHAIN_PATH}
@@ -196,8 +199,6 @@ jobs:
           echo "DN_BUILD_DIR=deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}" >> $GITHUB_ENV
           echo "Creating build in: $BUILD_DIR"
 
-          # create temporary keychain
-          export APPLE_API_KEY_PATH="${{ runner.temp }}/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           # CSC Variablen setzen (mit automatischer Erkennung)
           export CSC_IDENTITY_AUTO_DISCOVERY="true"
           export CSC_KEYCHAIN="${KEYCHAIN_PATH}"
