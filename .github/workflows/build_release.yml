@@ -172,7 +172,7 @@ jobs:
           # Import signing certificate (using one p12 for both app and installer)
           echo -n "${{ secrets.APPLE_MAC_CERT }}" | base64 --decode -o "${{ runner.temp }}/signing_cert.p12"
           security import "${{ runner.temp }}/signing_cert.p12" -P "${{ secrets.APPLE_MAC_CERT_PASS }}" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/bin/productsign -T /usr/bin/security -T /usr/bin/pkgbuild -T /usr/sbin/installer -k ${KEYCHAIN_PATH}
-          security set-key-partition-list -S apple-tool:,apple:,codesign:,productsign:,installer: -s -k "$APPLE_KEYCHAIN_PASS" ${KEYCHAIN_PATH}
+          security set-key-partition-list -S apple-tool:,apple:,codesign:,productsign:,installer:,pkgbuild: -s -k "$APPLE_KEYCHAIN_PASS" ${KEYCHAIN_PATH}
           rm "${{ runner.temp }}/signing_cert.p12"
 
           # import credentials from secrets
