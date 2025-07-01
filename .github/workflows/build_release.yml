@@ -215,10 +215,17 @@ jobs:
           echo "DN_BUILD_DIR=deepnest-${TAG}-${BUILD_FOR_OS}-${ARCH}" >> $GITHUB_ENV
           echo "Creating build in: $BUILD_DIR"
 
+          # Version aus package.json extrahieren
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Extracted version: ${VERSION}"
+
+          # Build-Verzeichnisname erstellen
+          export BUILD_DIR="deepnest-v${VERSION}"
+          echo "BUILD_DIR=${BUILD_DIR}" >> $GITHUB_ENV
+          echo "Creating build in: $BUILD_DIR"
 
           export APPLE_KEYCHAIN="${KEYCHAIN_PATH}"
           export APPLE_KEYCHAIN_PROFILE="deepnest-next"
-
 
           # provisioning profile
           # echo "Provisioning profile: ${{ secrets.APPLE_PROVISIONING_PROFILE }}"
@@ -256,17 +263,28 @@ jobs:
           set -e APPLE_API_ISSUER
           npm run build-dist:mac-signed
 
-          find . -type f -name "./deepnest-v1.5.6/*"
-          ls -d1 "./deepnest-v1.5.6/*"
+          find . -type f -name "deepnest-v1*"
+
+
+          # Alle relevanten Dateien finden und auflisten
+          echo "=== Searching for build artifacts ==="
+          find . -type f -name "${BUILD_DIR}*" -o -name "deepnest-v${VERSION}*" | sort
+
+          echo "=== Contents of dist directory ==="
+          if [ -d "dist" ]; then
+            ls -la dist/
+            find dist/ -type f \( -name "*.app" -o -name "*.pkg" -o -name "*.dmg" -o -name "*.zip" \) | sort
+          fi
+
+
+
+          echo "=== All potential artifacts ==="
+          find . -maxdepth 3 -type f \( -name "*.app" -o -name "*.pkg" -o -name "*.dmg" -o -name "*.zip" \) | grep -E "(deepnest|v${VERSION})" | sort
 
           # Clean up the keychain
           security delete-keychain ${KEYCHAIN_PATH}
 
-          # Zip the build directory with the same name
-          # zip -r "${BUILD_DIR}.zip" "$BUILD_DIR"
 
-          # create a zip file of the app
-          # zip -r "${BUILD_DIR}.zip" "${BUILD_DIR}"
 
       - name: Notarize the app
         if: always()
