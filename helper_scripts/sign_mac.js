@@ -3,22 +3,19 @@ import path from 'path';
 
 export default async function notarizing(context) {
   console.log(context);
-  const { electronPlatformName, appOutDir } = context;
+  const { platform, app } = context;
 
-  if (electronPlatformName !== 'darwin') {
+  if (platform !== 'darwin') {
     console.log('Skipping notarization - not building for macOS:', electronPlatformName);
     //return;
   }
 
-  const appName = context.packager.appInfo.productFilename;
-  const appPath = path.join(appOutDir, `${appName}.app`);
-
-  console.log(`Notarizing ${appPath}...`);
+  console.log(`Notarizing ${app}...`);
 
   try {
     await notarize({
       tool: 'notarytool',
-      appPath: appPath,
+      appPath: app,
       keychain: process.env.KEYCHAIN_PATH || 'login.keychain-db',
       keychainProfile: 'deepnest-next',
     });
