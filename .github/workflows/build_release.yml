@@ -142,6 +142,7 @@ jobs:
           npm run build
 
       - name: Package build
+        shell: bash
         env:
           APPLE_API_KEY_B64: ${{ secrets.APPLE_API_KEY }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
