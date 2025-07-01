@@ -279,11 +279,71 @@ jobs:
 
 
           echo "=== All potential artifacts ==="
-          find . -maxdepth 3 -type f \( -name "*.app" -o -name "*.pkg" -o -name "*.dmg" -o -name "*.zip" \) | grep -E "(deepnest|v${VERSION})" | sort
+          find . -maxdepth 3 -type f \( -name "*.app" -o -name "*.pkg" -o -name "*.dmg" -o -name "*.zip" -o -name "*.blockmap" \) | grep -E "(deepnest|v${VERSION})" | sort
 
           # Clean up the keychain
           security delete-keychain ${KEYCHAIN_PATH}
 
+      - name: Upload all artifacts dynamically
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          BUILD_DIR="deepnest-v${VERSION}"
+
+          # Finde alle Artifacts
+          ARTIFACTS=$(find . -maxdepth 3 -type f \( -name "*.dmg" -o -name "*.pkg" -o -name "*.zip" -o -name "*.blockmap" \) | grep -E "(deepnest|v${VERSION})")
+
+          if [ -z "$ARTIFACTS" ]; then
+            echo "No artifacts found!"
+            echo "Contents of current directory:"
+            ls -la
+            echo "Contents of dist directory:"
+            ls -la dist/ || echo "No dist directory"
+            exit 1
+          fi
+
+          echo "Found artifacts:"
+          echo "$ARTIFACTS"
+
+          # Upload jedes Artifact
+          for ARTIFACT in $ARTIFACTS; do
+            if [ -f "$ARTIFACT" ]; then
+              FILENAME=$(basename "$ARTIFACT")
+              EXTENSION="${FILENAME##*.}"
+
+              # Content-Type basierend auf Extension setzen
+              case $EXTENSION in
+                dmg) CONTENT_TYPE="application/x-apple-diskimage" ;;
+                pkg) CONTENT_TYPE="application/octet-stream" ;;
+                zip) CONTENT_TYPE="application/zip" ;;
+                *) CONTENT_TYPE="application/octet-stream" ;;
+              esac
+
+              # Standardisierter Dateiname
+              ASSET_NAME="${BUILD_DIR}-${BUILD_FOR_OS}-${ARCH}.${EXTENSION}"
+
+              echo "Uploading: $ARTIFACT as $ASSET_NAME"
+
+              curl -X POST \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Content-Type: $CONTENT_TYPE" \
+                --data-binary @"$ARTIFACT" \
+                "${{ steps.get_release.outputs.upload_url }}?name=$ASSET_NAME"
+            fi
+          done
+
+          # Erstelle APP ZIP falls .app Verzeichnis vorhanden
+          APP_DIR=$(find . -name "*.app" -type d | head -n 1)
+          if [ -n "$APP_DIR" ]; then
+            APP_ZIP="${BUILD_DIR}-${BUILD_FOR_OS}-${ARCH}-app.zip"
+            zip -r "$APP_ZIP" "$APP_DIR"
+
+            echo "Uploading APP bundle: $APP_ZIP"
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/zip" \
+              --data-binary @"$APP_ZIP" \
+              "${{ steps.get_release.outputs.upload_url }}?name=$APP_ZIP"
+          fi
 
 
       - name: Notarize the app
@@ -321,6 +381,7 @@ jobs:
           xcode-path: "/Applications/Xcode_15.2.app" # defaults to /Applications/Xcode_15.4.app
 
       - name: Artefakt an letztes Release anhängen
+        if: false
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
