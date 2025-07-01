@@ -257,6 +257,7 @@ jobs:
           npm run build-dist:mac-signed
 
           find . -type f -name "./deepnest-v1.5.6/*"
+          ls -d1 "./deepnest-v1.5.6/*"
 
           # Clean up the keychain
           security delete-keychain ${KEYCHAIN_PATH}
