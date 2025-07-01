@@ -150,6 +150,7 @@
       "category": "public.app-category.utilities",
       "type": "distribution",
       "icon": "icon.icns",
+      "artifactName": "${productName}-v${version}-${arch}.${ext}",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "extendInfo": {

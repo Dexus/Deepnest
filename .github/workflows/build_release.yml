@@ -261,7 +261,7 @@ jobs:
           set -e APPLE_API_KEY
           set -e APPLE_API_KEY_ID
           set -e APPLE_API_ISSUER
-          npm run build-dist:mac-signed
+          npm run build-dist:mac-signed -- --${{ env.ARCH }}
 
           find . -type f -name "deepnest-v1*"
 
@@ -324,17 +324,17 @@ jobs:
             fi
           done
 
-          # APP Bundle upload
-          APP_DIR=$(find . -name "*.app" -type d | head -n 1)
-          if [ -n "$APP_DIR" ]; then
-            APP_ZIP="${BUILD_DIR}-${BUILD_FOR_OS}-${ARCH}-app.zip"
-            echo "Creating and uploading APP bundle: $APP_ZIP"
-            zip -r "$APP_ZIP" "$APP_DIR"
+          # # APP Bundle upload
+          # APP_DIR=$(find . -name "*.app" -type d | head -n 1)
+          # if [ -n "$APP_DIR" ]; then
+          #   APP_ZIP="${BUILD_DIR}-${BUILD_FOR_OS}-${ARCH}-app.zip"
+          #   echo "Creating and uploading APP bundle: $APP_ZIP"
+          #   zip -r "$APP_ZIP" "$APP_DIR"
 
-            gh release upload "$TAG" "$APP_ZIP" --clobber --repo "${{ github.repository }}" || {
-              echo "Failed to upload APP bundle"
-            }
-          fi
+          #   gh release upload "$TAG" "$APP_ZIP" --clobber --repo "${{ github.repository }}" || {
+          #     echo "Failed to upload APP bundle"
+          #   }
+          # fi
 
       # - name: Upload all artifacts dynamically
       #   run: |
