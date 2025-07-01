@@ -265,7 +265,8 @@ jobs:
           export npm_config_arch="${{ env.ARCH }}"
           export npm_config_platform="darwin"
           npm i --arch=${{ env.ARCH }} --platform=darwin --unsafe-perm --build-from-source
-          npx electron-rebuild --arch=${{ env.ARCH }} --platform=darwin -f -w @deepnest/svg-preprocessor
+          npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/svg-preprocessor
+          npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/svg-preprocessor
           npx electron-builder build --mac --${{ env.ARCH }} --publish never
 
           find . -type f -name "deepnest-v1*"
