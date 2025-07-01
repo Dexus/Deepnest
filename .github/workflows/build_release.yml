@@ -239,11 +239,11 @@ jobs:
           echo "APPLE_INSTALLER_CERT exists: ${{ secrets.APPLE_INSTALLER_CERT != '' }}"
           echo "APPLE_MAC_CERT exists: ${{ secrets.APPLE_MAC_CERT != '' }}"
           echo -n "${{ secrets.APPLE_API_KEY }}" | base64 --decode -o "${APPLE_API_KEY}"
-          xcrun notarytool store-credentials "deepnest-next" -k "${APPLE_API_KEY}" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --team-id "${{ secrets.APPLE_TEAM_ID }}" --keychain "${KEYCHAIN_PATH}"
+          # xcrun notarytool store-credentials "deepnest-next" -k "${APPLE_API_KEY}" -d "${{ secrets.APPLE_API_KEY_ID }}" -i "${{ secrets.APPLE_API_ISSUER }}" --keychain "${KEYCHAIN_PATH}"
 
 
           # Notarize the app
-          #xcrun notarytool submit --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait "${BUILD_DIR}.zip"
+          # xcrun notarytool submit --keychain-profile "deepnest-next" --keychain "${KEYCHAIN_PATH}" --wait "${BUILD_DIR}.zip"
 
           rm "${BUILD_DIR}.zip" || true
 
