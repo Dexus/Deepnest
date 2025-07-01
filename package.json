@@ -194,7 +194,6 @@
       "publish": "never"
     },
     "pkg": {
-      "sign": true,
       "publish": "never"
     }
   },
