@@ -150,7 +150,7 @@
       "category": "public.app-category.utilities",
       "type": "distribution",
       "icon": "icon.icns",
-      "artifactName": "${productName}-v${version}-${arch}.${ext}",
+      "artifactName": "${productName}-v${version}-mac-${arch}.${ext}",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "extendInfo": {
