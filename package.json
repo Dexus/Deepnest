@@ -51,29 +51,30 @@
     "Laser"
   ],
   "devDependencies": {
-    "@electron/packager": "18.3.6",
-    "electron-builder": "26.0.15",
-    "@electron/rebuild": "4.0.1",
-    "@eslint/js": "^9.26.0",
-    "@playwright/test": "1.52.0",
-    "@types/node": "22.15.17",
-    "cross-replace": "0.2.0",
-    "electron": "34.5.5",
-    "eslint": "^9.26.0",
+    "@electron/notarize": "^3.0.1",
+    "@electron/packager": "^18.3.6",
+    "@electron/rebuild": "^4.0.1",
+    "@eslint/js": "^9.30.0",
+    "@playwright/test": "^1.53.2",
+    "@types/node": "^22.15.34",
+    "cross-replace": "^0.2.0",
+    "electron": "^34.5.8",
+    "electron-builder": "^26.0.17",
+    "eslint": "^9.30.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.0"
+    "typescript-eslint": "^8.35.1"
   },
   "dependencies": {
     "@deepnest/calculate-nfp": "202503.13.155300",
     "@deepnest/svg-preprocessor": "0.2.0",
     "@electron/remote": "2.1.2",
-    "axios": "1.9.0",
-    "form-data": "4.0.2",
+    "axios": "1.10.0",
+    "form-data": "4.0.3",
     "graceful-fs": "4.2.11",
-    "marked": "15.0.11"
+    "marked": "15.0.12"
   },
   "files": [
     "main.js",
@@ -163,6 +164,7 @@
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
       "notarize": true,
+      "sign": "helper_scripts/sign_mac.js",
       "target": [
         {
           "target": "dmg",
