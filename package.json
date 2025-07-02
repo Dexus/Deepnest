@@ -88,7 +88,8 @@
   "build": {
     "appId": "net.deepnest.app",
     "copyright": "(c)2025 deepnest-next Community",
-    "nodeGypRebuild": "legacy",
+    "nodeGypRebuild": false,
+    "npmRebuild": true,
     "files": [
       "**/*",
       "build/**/*.js",
@@ -150,6 +151,9 @@
     "mac": {
       "category": "public.app-category.utilities",
       "type": "distribution",
+      "darkModeSupport": true,
+      "mergeASARs": true,
+      "defaultArch": "universal",
       "icon": "icon.icns",
       "x64ArchFiles": "**/*.node",
       "artifactName": "${productName}-v${version}-mac-${arch}.${ext}",
