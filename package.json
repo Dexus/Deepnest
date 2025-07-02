@@ -153,7 +153,7 @@
       "type": "distribution",
       "darkModeSupport": true,
       "mergeASARs": true,
-      "defaultArch": "universal",
+      "defaultArch": "arm64",
       "icon": "icon.icns",
       "x64ArchFiles": "**/*.node",
       "artifactName": "${productName}-v${version}-mac-${arch}.${ext}",
