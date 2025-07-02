@@ -90,17 +90,17 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-        os: [macos-13, macos-latest]
+        include:
+          - os: macos-latest
+            arch: arm64
+          - os: macos-13
+            arch: x64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Install Boost (only for Ubuntu)
-        if: startsWith(matrix.os, 'ubuntu')
-        run: sudo apt-get update && sudo apt-get install -yq libboost-dev
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -110,13 +110,9 @@ jobs:
       - name: Set architecture
         id: set_arch
         run: |
-          # Check if the runner OS includes "arm" and set the ARCH environment variable accordingly
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            echo "ARCH=arm64" >> $GITHUB_ENV
-          else
-            echo "ARCH=x64" >> $GITHUB_ENV
-          fi
-          echo "Architecture set to: $ARCH"
+          # Use matrix architecture
+          echo "ARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "Architecture set to: ${{ matrix.arch }}"
 
       - name: Get latest release
         id: get_release
@@ -262,18 +258,28 @@ jobs:
           set -e APPLE_API_KEY_ID
           set -e APPLE_API_ISSUER
 
-          export npm_config_arch="arm64"
-          export npm_config_platform="darwin"
-          npm i --arch=arm64 --platform=darwin --unsafe-perm --build-from-source
-          npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/calculate-nfp
-          npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/svg-preprocessor
-          npx electron-builder build --mac --arm64 --publish never
+          # Build für spezifische Architektur (nur eine!)
+          echo "=== Building for ${{ matrix.arch }} architecture ==="
 
-          export npm_config_arch="x64"
-          npm i --arch=x64 --platform=darwin --unsafe-perm --build-from-source
-          npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/calculate-nfp
-          npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/svg-preprocessor
-          npx electron-builder build --mac --x64 --publish never
+          export npm_config_arch="${{ matrix.arch }}"
+          export npm_config_platform="darwin"
+          export npm_config_target_arch="${{ matrix.arch }}"
+          export npm_config_target_platform="darwin"
+
+          # Komplett frische Installation für die spezifische Architektur
+          rm -rf node_modules package-lock.json || true
+          npm ci --arch=${{ matrix.arch }} --platform=darwin --unsafe-perm --build-from-source
+
+          # Rebuild spezifische Module für die Architektur
+          npx electron-rebuild --arch=${{ matrix.arch }} --platform=darwin -f -w @deepnest/calculate-nfp
+          npx electron-rebuild --arch=${{ matrix.arch }} --platform=darwin -f -w @deepnest/svg-preprocessor
+
+          # Build nur für die spezifische Architektur
+          npx electron-builder build --mac "--${{ matrix.arch }}" --publish never
+
+          # Debug: Binary-Architekturen überprüfen
+          echo "=== Checking binary architectures for ${{ matrix.arch }} build ==="
+          find . -name "*.node" -exec file {} \; || true
 
           find . -type f -name "deepnest-v1*"
 
@@ -322,7 +328,7 @@ jobs:
             if [ -f "$ARTIFACT" ]; then
               FILENAME=$(basename "$ARTIFACT")
               EXTENSION="${FILENAME##*.}"
-              ASSET_NAME="${BUILD_DIR}-${BUILD_FOR_OS}-${ARCH}.${EXTENSION}"
+              ASSET_NAME="${BUILD_DIR}-${BUILD_FOR_OS}-${{ matrix.arch }}.${EXTENSION}"
 
               echo "Uploading: $ARTIFACT as $ASSET_NAME"
 
