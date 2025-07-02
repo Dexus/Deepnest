@@ -170,36 +170,7 @@
       "entitlements": "_build/entitlements.mac.plist",
       "entitlementsInherit": "_build/entitlements.mac.plist",
       "notarize": true,
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
-          "target": "dir",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
-          "target": "pkg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ]
+      "target": ["dmg","zip","dir","pkg"]
     },
     "dmg": {
       "sign": true
