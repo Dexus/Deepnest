@@ -87,8 +87,8 @@
   ],
   "build": {
     "appId": "net.deepnest.app",
-    "copyright": "2025 deepnest-next Community",
-    "nodeGypRebuild": false,
+    "copyright": "(c)2025 deepnest-next Community",
+    "nodeGypRebuild": true,
     "files": [
       "**/*",
       "build/**/*.js",
