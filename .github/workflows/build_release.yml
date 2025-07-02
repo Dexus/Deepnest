@@ -262,14 +262,18 @@ jobs:
           set -e APPLE_API_KEY_ID
           set -e APPLE_API_ISSUER
 
-          export npm_config_arch="${{ env.ARCH }}"
+          export npm_config_arch="arm64"
           export npm_config_platform="darwin"
-          npm i --arch=${{ env.ARCH }} --platform=darwin --unsafe-perm --build-from-source
-          npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/svg-preprocessor
-          npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/svg-preprocessor
+          npm i --arch=arm64 --platform=darwin --unsafe-perm --build-from-source
           npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/calculate-nfp
+          npx electron-rebuild --arch=arm64 --platform=darwin -f -w @deepnest/svg-preprocessor
+          npx electron-builder build --mac --arm64 --publish never
+
+          export npm_config_arch="x64"
+          npm i --arch=x64 --platform=darwin --unsafe-perm --build-from-source
           npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/calculate-nfp
-          npx electron-builder build --mac --x64 --arm64 --publish never
+          npx electron-rebuild --arch=x64 --platform=darwin -f -w @deepnest/svg-preprocessor
+          npx electron-builder build --mac --x64 --publish never
 
           find . -type f -name "deepnest-v1*"
 
@@ -441,13 +445,12 @@ jobs:
           xcode-path: "/Applications/Xcode_15.2.app" # defaults to /Applications/Xcode_15.4.app
 
       - name: Artefakt an letztes Release anhängen
-        if: false
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: deepnest-*
+          asset_path: deepnest-v1.5.6
           asset_name: deepnest-${{ steps.get_release.outputs.tag }}-${{ env.BUILD_FOR_OS}}-${{ env.ARCH }}.zip
           asset_content_type: application/zip
 
