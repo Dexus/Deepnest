@@ -151,6 +151,7 @@
       "category": "public.app-category.utilities",
       "type": "distribution",
       "icon": "icon.icns",
+      "x64ArchFiles": "**/*.node",
       "artifactName": "${productName}-v${version}-mac-${arch}.${ext}",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
