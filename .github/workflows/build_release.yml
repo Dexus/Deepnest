@@ -267,7 +267,7 @@ jobs:
           export npm_config_target_platform="darwin"
 
           # Komplett frische Installation für die spezifische Architektur
-          rm -rf node_modules package-lock.json || true
+          #rm -rf node_modules package-lock.json || true
           npm ci --arch=${{ matrix.arch }} --platform=darwin --unsafe-perm --build-from-source
 
           # Rebuild spezifische Module für die Architektur
