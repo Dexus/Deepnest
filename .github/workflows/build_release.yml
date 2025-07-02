@@ -5,6 +5,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release-linux:
     if: false == true
@@ -450,14 +453,13 @@ jobs:
           xcode-path: "/Applications/Xcode_15.2.app" # defaults to /Applications/Xcode_15.4.app
 
       - name: Artefakt an letztes Release anhängen
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: deepnest-v1.5.6
-          asset_name: deepnest-${{ steps.get_release.outputs.tag }}-${{ env.BUILD_FOR_OS}}-${{ env.ARCH }}.zip
-          asset_content_type: application/zip
+          files: |
+            deepnest-v1.5.6/*.zip
+            deepnest-v1.5.6/*.pkg
+            deepnest-v1.5.6/*.dmg
+            deepnest-v1.5.6/*.blockmap
 
   build-and-release-windows:
     if: false == true
